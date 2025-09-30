@@ -1,238 +1,363 @@
-# AegisFlows - Identity and Access Management Service
+# AegisFlows - Dynamic IAM Management
 
-Estudio del uso de Keycloak como servicio para manejar profiles y centralizar servicios IAM.
+A robust, enterprise-grade Identity and Access Management platform with **dynamic realm support**. Built for flexibility, security, and ease of use.
 
-Este proyecto proporciona un servicio IAM listo para ejecutar utilizando Keycloak 26 y PostgreSQL 15 con Docker.
+## 🚀 Quick Start
 
-## Requisitos Previos
+```bash
+# Complete setup from zero
+make setup
 
-- Docker instalado (versión 20.10 o superior)
-- Docker Compose instalado (versión 2.0 o superior)
-- Al menos 2GB de RAM disponible para los contenedores
+# Or step by step
+make check-requirements  # Validate system
+make start               # Start services  
+make realm-import        # Import realm configuration
 
-## Componentes
+# Access the system
+# - Keycloak Admin: http://localhost:8080/admin (admin/admin)
+# - Auto-detected Realm: http://localhost:8080/realms/{detected-realm-name}
+```
 
-- **Keycloak 26**: Sistema de gestión de identidad y acceso de código abierto
-- **PostgreSQL 15**: Base de datos para persistencia de datos de Keycloak
+## ✨ What You Get
 
-## Inicio Rápido
+- **🔥 Dynamic Realm System**: Works with ANY realm configuration - no hardcoding!
+- **🛡️ Keycloak 26.1.2**: Latest stable version with PostgreSQL backend
+- **🔐 API-Based Security**: OAuth secrets managed via Keycloak Admin API
+- **⚡ Enterprise Automation**: 40+ Makefile commands for all operations
+- **🎯 Multi-Environment**: Dev/Prod profiles with health monitoring
+- **📊 Professional Tooling**: Comprehensive logging, backup, and monitoring
 
-### 1. Clonar el repositorio
+## 🎯 Dynamic Realm Features
+
+### **Zero Hardcoding**: 
+- Auto-detects realm configuration from JSON files
+- Extracts realm name dynamically from configuration
+- Works with ANY realm name - `zmart`, `aegis-test`, `your-company`, etc.
+
+### **Smart Import System**:
+- `make realm-import` - Auto-detects first realm config
+- `make realm-import REALM=filename.json` - Import specific realm
+- `./scripts/realm-import.sh --help` - Full usage documentation
+
+### **API-Based Security**:
+- OAuth secrets injected via Keycloak Admin API (not files!)
+- GitHub/Google OAuth provider configuration
+- Client secrets managed securely
+
+## 📋 System Requirements
+
+Automatically validated with `make check-requirements`:
+
+- Docker 20.10+ with Docker Compose
+- 4GB+ RAM (recommended)
+- 5GB+ available disk space  
+- Internet connectivity for image pulls
+- Ports 8080, 9000, 5432 available
+
+## 🚦 Getting Started
+
+### 1. Clone & Setup
 
 ```bash
 git clone https://github.com/agustin-rios/AegisFlows.git
 cd AegisFlows
+make setup  # Complete zero-to-ready setup
 ```
 
-### 2. Instalación automática
+### 2. Configure OAuth Providers (Optional)
+
+Edit `.env` with your OAuth credentials:
 
 ```bash
-make install
+# GitHub OAuth Configuration
+GITHUB_CLIENT_ID=your-actual-github-client-id
+GITHUB_CLIENT_SECRET=your-actual-github-client-secret
+
+# Google OAuth Configuration  
+GOOGLE_CLIENT_ID=your-actual-google-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-actual-google-client-secret
 ```
 
-### 3. Configurar variables de entorno (recomendado)
+### 3. Environment Variables Reference
 
-El comando `make install` crea automáticamente un archivo `.env` desde `.env.example`. Edítalo según sea necesario:
+Core configuration in `.env`:
 
 ```bash
-nano .env  # o tu editor preferido
+# Database Configuration
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=iam_db
+
+# Keycloak Admin Configuration  
+KC_BOOTSTRAP_ADMIN_USERNAME=admin
+KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+
+# OAuth Providers (set your real values)
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Application Secrets (Realm-agnostic)
+FRONTEND_CLIENT_ID=your-frontend-client-id
+FRONTEND_SECRET=your-secure-frontend-secret
 ```
 
-Variables disponibles:
-- `POSTGRES_DB`: Nombre de la base de datos (default: keycloak)
-- `POSTGRES_USER`: Usuario de PostgreSQL (default: keycloak)
-- `POSTGRES_PASSWORD`: Contraseña de PostgreSQL (default: keycloak)
-- `DB_PORT`: Puerto del servicio PostgreSQL expuesto localmente (default: 5432)
-- `KEYCLOAK_ADMIN`: Usuario administrador de Keycloak (default: admin)
-- `KEYCLOAK_ADMIN_PASSWORD`: Contraseña del administrador (default: admin)
-- `KC_HOSTNAME`: Hostname para Keycloak (default: localhost)
-- `KEYCLOAK_PORT`: Puerto HTTP de Keycloak (default: 8080)
-- `KEYCLOAK_MGMT_PORT`: Puerto de gestión y métricas (default: 9000)
+⚠️ **Important**: Change default passwords in production environments.
 
-⚠️ **Importante**: Cambia las contraseñas predeterminadas en entornos de producción.
+### 4. Access Your System
 
-### 4. Validar la configuración
+After `make setup` completes:
+
+**Keycloak Admin Console**: http://localhost:8080/admin  
+**Default Credentials**: admin / admin
+
+**Your Realm**: http://localhost:8080/realms/{detected-realm-name}  
+**Account Console**: http://localhost:8080/realms/{detected-realm-name}/account
+
+## 🛠️ Comprehensive Command Reference
+
+Our enterprise-grade Makefile includes 40+ commands organized by category:
+
+### 🚀 Core Operations
 
 ```bash
-make validate
+make help                    # Show all available commands with descriptions
+make setup                   # Complete zero-to-ready setup
+make start                   # Start services with environment detection
+make stop                    # Stop all services gracefully  
+make restart                 # Restart services with health checks
+make clean                   # Stop and remove all data (⚠️ DATA LOSS!)
 ```
 
-### 5. Iniciar los servicios
+### 🔧 Environment Management
 
 ```bash
-# Desarrollo
-make dev
-
-# O manualmente
-docker compose up -d
+make dev                     # Switch to development environment
+make prod                    # Switch to production environment
+make check-requirements      # Validate system requirements
+make performance             # Show performance metrics
 ```
 
-### 4. Verificar el estado de los servicios
+### 🏰 Realm Management (Dynamic)
 
 ```bash
-docker compose ps
+make realm-import                        # Auto-detect and import first realm
+make realm-import REALM=filename.json    # Import specific realm config
+make realm-export                        # Export current realm configuration
 ```
 
-Los servicios deberían estar en estado "healthy" después de aproximadamente 1-2 minutos.
-
-### 5. Acceder a Keycloak
-
-Abre tu navegador y accede a:
-
-```
-http://localhost:8080
-```
-
-Credenciales por defecto:
-- Usuario: `admin`
-- Contraseña: `admin`
-
-## Comandos Útiles
-
-Este proyecto incluye un Makefile con comandos convenientes:
-
-### Comandos principales
+### 📊 Monitoring & Logs
 
 ```bash
-make help          # Mostrar ayuda
-make dev           # Iniciar entorno de desarrollo  
-make prod          # Iniciar entorno de producción
-make monitoring    # Iniciar con stack de monitoreo
-make stop          # Detener servicios
-make clean         # Detener y eliminar datos (¡PÉRDIDA DE DATOS!)
+make status                  # Show service status and health
+make logs                    # View logs from all services
+make logs-keycloak          # View Keycloak logs only
+make logs-postgres          # View PostgreSQL logs only
+make follow-logs            # Follow logs in real-time
 ```
 
-### Logs y monitoreo
+### 💾 Database Operations
 
 ```bash
-make logs          # Ver logs de todos los servicios
-make logs-keycloak # Ver logs solo de Keycloak
-make logs-postgres # Ver logs solo de PostgreSQL
-make status        # Estado de los servicios
-make health        # Verificar salud de los servicios
+make backup                           # Create database backup
+make restore BACKUP_FILE=file.sql     # Restore from backup
+make psql                            # Connect to PostgreSQL shell
+make shell-postgres                  # Open shell in PostgreSQL container
 ```
 
-### Operaciones de base de datos
+### 🔐 Security & Maintenance
 
 ```bash
-make backup        # Crear backup de la base de datos
-make restore BACKUP_FILE=archivo.sql  # Restaurar backup
-make psql          # Conectar a PostgreSQL
+make security-check         # Run security audit
+make update-secrets         # Update OAuth secrets via API
+make validate-config        # Validate configuration files
 ```
 
-### Comandos legacy (Docker Compose directo)
+### 🐳 Direct Docker Commands (Advanced)
 
 ```bash
-# Ver logs
+# View logs directly
 docker compose logs -f
 
-# Detener servicios  
+# Stop services  
 docker compose down
 
-# Detener y eliminar datos
+# Stop and remove data
 docker compose down -v
 
-# Reiniciar servicio específico
-docker compose restart keycloak
+# Restart specific service
+docker compose restart iam-keycloak-dev
 ```
 
-## Puertos Expuestos
+## 🏗️ Architecture Overview
 
-- **8080**: Consola de administración de Keycloak y API
-- **9000**: Puerto de métricas y administración interna de Keycloak
-- **5432**: PostgreSQL (opcional, para acceso directo a la base de datos)
+### **Dynamic IAM Platform**
 
-## Arquitectura
-
+```text
+┌─────────────────────────────────────────────────────┐
+│                 AegisFlows Platform                 │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│  ┌─────────────────┐    ┌─────────────────────────┐ │
+│  │  Keycloak 26.1.2│◄──►│   PostgreSQL 15-Alpine │ │
+│  │                 │    │                         │ │
+│  │  HTTP: 8080     │    │    Database: iam_db     │ │
+│  │  MGMT: 9000     │    │    Port: 5432           │ │
+│  └─────────────────┘    └─────────────────────────┘ │
+│                                                     │
+│  ┌─────────────────────────────────────────────────┐ │
+│  │              Dynamic Realm System               │ │
+│  │                                                 │ │
+│  │  • Auto-detects realm configurations           │ │
+│  │  • API-based OAuth secret management           │ │
+│  │  • Multi-realm support                         │ │
+│  │  • Environment-agnostic operation              │ │
+│  └─────────────────────────────────────────────────┘ │
+│                                                     │
+└─────────────────────────────────────────────────────┘
 ```
-┌─────────────────┐
-│   Keycloak 26   │
-│   Port: 8080    │
-└────────┬────────┘
-         │
-         │ JDBC
-         │
-┌────────▼────────┐
-│ PostgreSQL 15   │
-│   Port: 5432    │
-└─────────────────┘
-```
 
-## Configuración Avanzada
+### **Port Configuration**
 
-### Modo Producción
+- **🌐 8080**: Keycloak HTTP (Admin Console + Realm APIs)
+- **⚙️ 9000**: Keycloak Management (Health, Metrics)  
+- **🗄️ 5432**: PostgreSQL Database (Optional direct access)
 
-Activa el perfil `prod` para construir la imagen optimizada definida en `Dockerfile`:
+### **Security Model**
+
+- **🔐 API-First**: OAuth secrets managed via Keycloak Admin API
+- **🛡️ No Secrets in Files**: Clean realm templates without credentials
+- **🔄 Dynamic Configuration**: Runtime secret injection
+- **📋 Environment Variables**: Secure credential management
+
+## ⚙️ Advanced Configuration
+
+### 🚀 Production Mode
+
+Activate production profile for optimized deployment:
 
 ```bash
-docker compose --profile prod up -d keycloak-prod
+make prod  # Uses production-optimized configuration
 ```
 
-Al usar la imagen optimizada asegúrate de:
-- Configurar certificados SSL/TLS y un proxy inverso
-- Ajustar variables de entorno y contraseñas seguras
-- Definir límites de recursos y monitoreo
-- Establecer un plan de backups para la base de datos
+Production checklist:
 
-### Personalización
+- ✅ Configure SSL/TLS certificates and reverse proxy
+- ✅ Set secure environment variables and passwords  
+- ✅ Define resource limits and monitoring
+- ✅ Establish database backup strategy
+- ✅ Review security settings and firewall rules
 
-Puedes personalizar Keycloak mediante:
-- Variables de entorno adicionales (ver documentación oficial)
-- Archivos JSON en `config/realms/` que se importan automáticamente al iniciar
-- Temas personalizados dentro de `themes/`
-- Ajustes de base de datos editando `scripts/init-db.sh`
-- Providers personalizados montados en `/opt/keycloak/providers`
+### 🎨 Customization Options
 
-## Health Checks
+**Dynamic Realm Configuration**:
 
-Los servicios exponen endpoints de salud para integrarlos con tu plataforma de observabilidad:
+- Add any `*.json` realm config to `config/realms/`
+- Use `make realm-import REALM=your-config.json`
+- System auto-detects realm name and configures endpoints
 
-- **PostgreSQL**: El healthcheck de Compose usa `pg_isready` para validar la conexión
-- **Keycloak**: Con `KC_HEALTH_ENABLED=true` queda disponible `/health/ready`
+**OAuth Provider Setup**:
 
-## Troubleshooting
+- GitHub: Configure OAuth App and set `GITHUB_CLIENT_ID/SECRET`
+- Google: Configure OAuth 2.0 credentials and set `GOOGLE_CLIENT_ID/SECRET`
+- Secrets are injected via API (never stored in files)
 
-### Keycloak no inicia
+**Custom Themes**:
 
-1. Verifica que PostgreSQL esté healthy: `docker compose ps`
-2. Revisa los logs: `docker compose logs keycloak`
-3. Asegúrate de tener suficiente memoria disponible
+- Place custom themes in `themes/` directory
+- Themes are automatically mounted to Keycloak container
 
-### No puedo acceder a localhost:8080
+**Database Customization**:
 
-1. Verifica que el contenedor esté corriendo: `docker compose ps`
-2. Verifica que el puerto no esté en uso: `lsof -i :8080` (Linux/Mac) o `netstat -ano | findstr :8080` (Windows)
-3. Prueba acceder a `http://127.0.0.1:8080`
+- Edit `scripts/init-db.sh` for custom database setup
+- Use `make psql` for direct database access
 
-### Error de conexión a la base de datos
+## 🏥 Health Monitoring
 
-1. Verifica que PostgreSQL esté healthy
-2. Verifica las variables de entorno en `.env`
-3. Reinicia los servicios: `docker compose restart`
+Comprehensive health checking system:
 
-## Contribuir
+**Automated Health Checks**:
 
-Las contribuciones son bienvenidas. Por favor:
+- **PostgreSQL**: `pg_isready` connection validation
+- **Keycloak**: Management endpoint `/health` on port 9000
+- **System**: `make status` for complete service overview
 
-1. Haz fork del proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+**Monitoring Integration**:
 
-## Licencia
+```bash
+make health              # Complete health audit
+make performance         # Resource usage metrics  
+make security-check      # Security vulnerability scan
+```
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
+## 🩺 Troubleshooting Guide
 
-## Recursos Adicionales
+### ❌ Keycloak Won't Start
 
-- [Documentación oficial de Keycloak](https://www.keycloak.org/documentation)
-- [Guías de Keycloak](https://www.keycloak.org/guides)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/15/)
-- [Docker Documentation](https://docs.docker.com/)
+1. **Check Prerequisites**: `make check-requirements`
+2. **Verify Database**: `make status` (PostgreSQL should be healthy)
+3. **Review Logs**: `make logs-keycloak`
+4. **Memory Check**: Ensure 4GB+ RAM available
 
-## Contacto
+### 🌐 Can't Access localhost:8080
 
-Agustin Rios - [@agustin-rios](https://github.com/agustin-rios)
+1. **Container Status**: `docker ps` (look for iam-keycloak-dev)
+2. **Port Conflicts**: `lsof -i :8080` (Linux/Mac) or `netstat -ano | findstr :8080` (Windows)
+3. **Alternative URL**: Try `http://127.0.0.1:8080`
+4. **Firewall**: Check local firewall settings
 
-Project Link: [https://github.com/agustin-rios/AegisFlows](https://github.com/agustin-rios/AegisFlows)
+### 🗄️ Database Connection Issues
+
+1. **PostgreSQL Health**: `make status` 
+2. **Environment Variables**: Verify `.env` configuration
+3. **Network**: `docker network ls` (look for iam-network)
+4. **Restart Services**: `make restart`
+
+### 🔐 Realm Import Failures
+
+1. **Configuration**: `./scripts/realm-import.sh --help`
+2. **JSON Validation**: Ensure realm JSON is valid
+3. **OAuth Credentials**: Check `GITHUB_CLIENT_ID/SECRET` in `.env`
+4. **Manual Import**: Use Keycloak admin console as fallback
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. **Fork** the project
+2. **Create** your feature branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** to the branch (`git push origin feature/AmazingFeature`)
+5. **Open** a Pull Request
+
+### Development Guidelines
+
+- Follow existing code style and patterns
+- Update documentation for any new features
+- Test changes with `make check-requirements` and `make setup`
+- Ensure dynamic realm system compatibility
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## 📚 Additional Resources
+
+- **[Keycloak Documentation](https://www.keycloak.org/documentation)** - Official Keycloak guides
+- **[Keycloak Admin REST API](https://www.keycloak.org/docs-api/22.0.5/rest-api/)** - API reference for automation
+- **[PostgreSQL 15 Documentation](https://www.postgresql.org/docs/15/)** - Database configuration
+- **[Docker Compose Reference](https://docs.docker.com/compose/)** - Container orchestration
+- **[OAuth 2.0 & OIDC](https://oauth.net/2/)** - Authentication protocols
+
+## 👨‍💻 Contact & Support
+
+**Agustin Rios** - [@agustin-rios](https://github.com/agustin-rios)
+
+**Project Repository**: [https://github.com/agustin-rios/AegisFlows](https://github.com/agustin-rios/AegisFlows)
+
+**Issues & Feature Requests**: Use GitHub Issues for bug reports and feature requests
+
+---
+
+⭐ **Star this repo** if you find AegisFlows useful for your IAM needs!

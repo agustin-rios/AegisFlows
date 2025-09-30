@@ -1,6 +1,10 @@
 # Environment variables
 .env
 
+# Temporary/Generated files
+*.tmp
+*.log
+backups/
 # Docker volumes
 postgres_data/
 

@@ -1,304 +1,349 @@
-#!/usr/bin/env bash
-# =============================================================================
-# AegisFlows Backup Script
-# =============================================================================
-# This script creates comprehensive backups of Keycloak data including:
-# - PostgreSQL database dump
-# - Keycloak data directory
-# - Configuration files
-# - SSL certificates (if present)
-# =============================================================================
+#!/bin/bash
+
+# AegisFlows - Backup Script
+# Comprehensive backup solution for database and configuration
 
 set -euo pipefail
 
-# Configuration
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-BACKUP_BASE_DIR="${PROJECT_DIR}/backups"
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="${BACKUP_BASE_DIR}/${TIMESTAMP}"
-
-# Colors for output
+# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
+YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Logging
+# Configuration
+BACKUP_DIR="./backups"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+BACKUP_NAME="aegisflows_backup_${TIMESTAMP}"
+RETENTION_DAYS=30
+
+# Logging functions
 log() {
-    echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+    echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}"
 }
 
-log_success() {
-    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+success() {
+    echo -e "${GREEN}✅ $1${NC}"
 }
 
-log_warning() {
-    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+error() {
+    echo -e "${RED}❌ $1${NC}"
 }
 
-log_error() {
-    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
-}
-
-# Help message
-show_help() {
-    echo "AegisFlows Backup Script"
-    echo "========================"
-    echo ""
-    echo "Usage: $0 [OPTIONS]"
-    echo ""
-    echo "Options:"
-    echo "  -h, --help           Show this help message"
-    echo "  -d, --destination    Backup destination directory (default: ./backups)"
-    echo "  -c, --compress       Compress backup using gzip"
-    echo "  -k, --keep DAYS      Keep backups for DAYS days (default: 30)"
-    echo "  -q, --quiet          Quiet mode - minimal output"
-    echo "  --db-only            Backup only the database"
-    echo "  --no-data            Backup only Keycloak data directory"
-    echo ""
-    echo "Examples:"
-    echo "  $0                   # Create full backup"
-    echo "  $0 --compress        # Create compressed backup"
-    echo "  $0 --db-only         # Backup only database"
-    echo "  $0 -k 7              # Keep backups for 7 days"
-}
-
-# Parse command line arguments
-COMPRESS=false
-KEEP_DAYS=30
-QUIET=false
-DB_ONLY=false
-DATA_ONLY=false
-
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        -h|--help)
-            show_help
-            exit 0
-            ;;
-        -d|--destination)
-            BACKUP_BASE_DIR="$2"
-            BACKUP_DIR="${BACKUP_BASE_DIR}/${TIMESTAMP}"
-            shift 2
-            ;;
-        -c|--compress)
-            COMPRESS=true
-            shift
-            ;;
-        -k|--keep)
-            KEEP_DAYS="$2"
-            shift 2
-            ;;
-        -q|--quiet)
-            QUIET=true
-            shift
-            ;;
-        --db-only)
-            DB_ONLY=true
-            shift
-            ;;
-        --no-data)
-            DATA_ONLY=true
-            shift
-            ;;
-        *)
-            log_error "Unknown option: $1"
-            show_help
-            exit 1
-            ;;
-    esac
-done
-
-# Quiet mode
-if [[ "$QUIET" == "true" ]]; then
-    exec 1>/dev/null
-fi
-
-# Check if Docker is running
-check_docker() {
-    if ! docker info >/dev/null 2>&1; then
-        log_error "Docker is not running!"
-        exit 1
-    fi
-}
-
-# Check if services are running
-check_services() {
-    log "Checking if services are running..."
-    
-    if ! docker compose ps postgres | grep -q "running"; then
-        log_error "PostgreSQL service is not running!"
-        log_error "Start services with: docker compose up -d"
-        exit 1
-    fi
-    
-    log_success "Services are running"
+warning() {
+    echo -e "${YELLOW}⚠️  $1${NC}"
 }
 
 # Create backup directory
 create_backup_dir() {
-    log "Creating backup directory: $BACKUP_DIR"
-    mkdir -p "$BACKUP_DIR"
+    local backup_path="$BACKUP_DIR/$BACKUP_NAME"
+    
+    if [[ ! -d "$BACKUP_DIR" ]]; then
+        mkdir -p "$BACKUP_DIR"
+    fi
+    
+    mkdir -p "$backup_path"/{database,config,logs}
+    log "Created backup directory structure: $backup_path"
+    echo "$backup_path"
 }
 
-# Backup database
+# Backup PostgreSQL database
 backup_database() {
+    local backup_path="$1"
     log "Backing up PostgreSQL database..."
     
-    # Load environment variables
-    if [[ -f "${PROJECT_DIR}/.env" ]]; then
-        source "${PROJECT_DIR}/.env"
-    fi
-    
-    local db_file="${BACKUP_DIR}/postgres_keycloak.sql"
-    
-    if docker compose exec -T postgres pg_dump -U "${POSTGRES_USER:-keycloak}" "${POSTGRES_DB:-keycloak}" > "$db_file"; then
-        log_success "Database backup completed: $(basename "$db_file")"
-        
-        if [[ "$COMPRESS" == "true" ]]; then
-            log "Compressing database backup..."
-            gzip "$db_file"
-            log_success "Database backup compressed: $(basename "$db_file").gz"
-        fi
-    else
-        log_error "Failed to backup database!"
+    # Check if PostgreSQL container is running
+    if ! docker ps | grep -q iam-postgres; then
+        error "PostgreSQL container is not running"
         return 1
     fi
-}
-
-# Backup Keycloak data
-backup_keycloak_data() {
-    log "Backing up Keycloak data directory..."
     
-    local data_dir="${BACKUP_DIR}/keycloak_data"
-    mkdir -p "$data_dir"
+    # Create database dump
+    local db_backup_file="$backup_path/database/iam_db_${TIMESTAMP}.sql"
     
-    # Copy Keycloak data volume
-    if docker compose exec keycloak tar -czf - -C /opt/keycloak/data . > "${data_dir}/keycloak_data.tar.gz"; then
-        log_success "Keycloak data backup completed"
+    if docker exec iam-postgres pg_dump -U postgres -d iam_db > "$db_backup_file"; then
+        success "Database backup created: $(basename "$db_backup_file")"
+        
+        # Compress the backup
+        gzip "$db_backup_file"
+        success "Database backup compressed: $(basename "$db_backup_file").gz"
+        
+        # Create metadata file
+        cat > "$backup_path/database/metadata.txt" << EOF
+Backup Information
+==================
+Database: iam_db
+Timestamp: $(date)
+PostgreSQL Version: $(docker exec iam-postgres psql -U postgres -t -c "SELECT version();" | head -1 | xargs)
+Database Size: $(docker exec iam-postgres psql -U postgres -d iam_db -t -c "SELECT pg_size_pretty(pg_database_size('iam_db'));" | xargs)
+Tables Count: $(docker exec iam-postgres psql -U postgres -d iam_db -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public';" | xargs)
+EOF
+        
+        return 0
     else
-        log_warning "Failed to backup Keycloak data (service might not be running)"
+        error "Failed to backup database"
+        return 1
     fi
 }
 
 # Backup configuration files
 backup_config() {
+    local backup_path="$1"
     log "Backing up configuration files..."
     
-    local config_dir="${BACKUP_DIR}/config"
-    mkdir -p "$config_dir"
+    # Copy important configuration files
+    local config_files=(
+        ".env"
+        "docker-compose.yml"
+        "Dockerfile.dev"
+        "Dockerfile.prod"
+        "Makefile"
+    )
     
-    # Copy configuration files
-    cp -r "${PROJECT_DIR}/config" "$config_dir/" 2>/dev/null || true
-    cp -r "${PROJECT_DIR}/themes" "$config_dir/" 2>/dev/null || true
-    cp -r "${PROJECT_DIR}/scripts" "$config_dir/" 2>/dev/null || true
+    for file in "${config_files[@]}"; do
+        if [[ -f "$file" ]]; then
+            cp "$file" "$backup_path/config/"
+            success "Backed up: $file"
+        else
+            warning "Configuration file not found: $file"
+        fi
+    done
     
-    # Copy Docker files
-    cp "${PROJECT_DIR}/docker-compose.yml" "$config_dir/" 2>/dev/null || true
-    cp "${PROJECT_DIR}/Dockerfile" "$config_dir/" 2>/dev/null || true
-    cp "${PROJECT_DIR}/Dockerfile.dev" "$config_dir/" 2>/dev/null || true
-    
-    # Copy environment files (excluding sensitive data)
-    cp "${PROJECT_DIR}/.env.example" "$config_dir/" 2>/dev/null || true
-    
-    # Copy SSL certificates if they exist
-    if [[ -d "${PROJECT_DIR}/certs" ]]; then
-        cp -r "${PROJECT_DIR}/certs" "$config_dir/" 2>/dev/null || true
-        log_success "SSL certificates backed up"
+    # Copy entire config directory if it exists
+    if [[ -d "config" ]]; then
+        cp -r config/* "$backup_path/config/" 2>/dev/null || true
+        success "Backed up config directory"
     fi
     
-    log_success "Configuration files backed up"
+    # Copy themes if they exist
+    if [[ -d "themes" ]]; then
+        cp -r themes "$backup_path/config/" 2>/dev/null || true
+        success "Backed up themes directory"
+    fi
+    
+    # Create system info
+    cat > "$backup_path/config/system_info.txt" << EOF
+System Information
+==================
+Hostname: $(hostname)
+Operating System: $(uname -a)
+Docker Version: $(docker --version)
+Docker Compose Version: $(docker compose version --short 2>/dev/null || echo 'Unknown')
+Backup Date: $(date)
+Backup Script Version: 1.0
+
+Environment Variables (sensitive data removed):
+$(grep -v -E "(PASSWORD|SECRET|KEY)" .env 2>/dev/null || echo "No .env file found")
+EOF
+}
+
+# Backup container logs
+backup_logs() {
+    local backup_path="$1"
+    log "Backing up container logs..."
+    
+    # Backup Keycloak logs
+    local kc_container
+    if docker ps --format "table {{.Names}}" | grep -q "iam-keycloak-dev"; then
+        kc_container="iam-keycloak-dev"
+    elif docker ps --format "table {{.Names}}" | grep -q "iam-keycloak-prod"; then
+        kc_container="iam-keycloak-prod"
+    fi
+    
+    if [[ -n "${kc_container:-}" ]]; then
+        docker logs "$kc_container" > "$backup_path/logs/keycloak_${TIMESTAMP}.log" 2>&1
+        success "Backed up Keycloak logs"
+    fi
+    
+    # Backup PostgreSQL logs
+    if docker ps | grep -q iam-postgres; then
+        docker logs iam-postgres > "$backup_path/logs/postgres_${TIMESTAMP}.log" 2>&1
+        success "Backed up PostgreSQL logs"
+    fi
+    
+    # Backup system logs if available
+    if [[ -d "logs" ]]; then
+        cp -r logs/* "$backup_path/logs/" 2>/dev/null || true
+    fi
 }
 
 # Create backup manifest
 create_manifest() {
+    local backup_path="$1"
     log "Creating backup manifest..."
     
-    local manifest_file="${BACKUP_DIR}/backup_manifest.txt"
-    
-    cat > "$manifest_file" << EOF
+    cat > "$backup_path/MANIFEST.txt" << EOF
 AegisFlows Backup Manifest
-=========================
-Backup Date: $(date)
-Backup Directory: $BACKUP_DIR
-Hostname: $(hostname)
-Docker Version: $(docker --version)
-Docker Compose Version: $(docker compose version --short)
+==========================
+Backup Name: $BACKUP_NAME
+Creation Date: $(date)
+Backup Path: $backup_path
 
-Backup Contents:
+Contents:
+---------
+$(find "$backup_path" -type f -exec basename {} \; | sort)
+
+Directory Structure:
+-------------------
+$(tree "$backup_path" 2>/dev/null || find "$backup_path" -type d | sort)
+
+File Sizes:
+-----------
+$(du -h "$backup_path"/* 2>/dev/null | sort -hr)
+
+Total Size: $(du -sh "$backup_path" | cut -f1)
+
+Verification:
+-------------
+MD5 Checksums:
+$(find "$backup_path" -type f -name "*.sql.gz" -o -name "*.env" -o -name "*.yml" | xargs md5sum 2>/dev/null || echo "No files to checksum")
 EOF
-    
-    if [[ "$DB_ONLY" != "true" ]]; then
-        echo "- PostgreSQL database dump" >> "$manifest_file"
-    fi
-    
-    if [[ "$DATA_ONLY" != "true" ]]; then
-        echo "- Keycloak data directory" >> "$manifest_file"
-        echo "- Configuration files" >> "$manifest_file"
-        echo "- SSL certificates (if present)" >> "$manifest_file"
-    fi
-    
-    echo "" >> "$manifest_file"
-    echo "Files:" >> "$manifest_file"
-    find "$BACKUP_DIR" -type f -exec ls -lh {} \; >> "$manifest_file"
-    
-    log_success "Backup manifest created"
+
+    success "Backup manifest created"
 }
 
-# Cleanup old backups
+# Compress backup
+compress_backup() {
+    local backup_path="$1"
+    log "Compressing backup archive..."
+    
+    local backup_archive="${backup_path}.tar.gz"
+    
+    if tar -czf "$backup_archive" -C "$BACKUP_DIR" "$(basename "$backup_path")"; then
+        success "Backup compressed: $(basename "$backup_archive")"
+        
+        # Remove uncompressed directory
+        rm -rf "$backup_path"
+        
+        # Display archive information
+        echo ""
+        echo -e "${BLUE}Backup Archive Information:${NC}"
+        echo "File: $backup_archive"
+        echo "Size: $(du -h "$backup_archive" | cut -f1)"
+        echo "Created: $(date)"
+        
+        return 0
+    else
+        error "Failed to compress backup"
+        return 1
+    fi
+}
+
+# Clean old backups
 cleanup_old_backups() {
-    log "Cleaning up backups older than $KEEP_DAYS days..."
+    log "Cleaning up old backups (older than $RETENTION_DAYS days)..."
     
-    find "$BACKUP_BASE_DIR" -maxdepth 1 -type d -name "[0-9]*_[0-9]*" -mtime +$KEEP_DAYS -exec rm -rf {} \; 2>/dev/null || true
+    if [[ ! -d "$BACKUP_DIR" ]]; then
+        return 0
+    fi
     
-    local remaining_backups
-    remaining_backups=$(find "$BACKUP_BASE_DIR" -maxdepth 1 -type d -name "[0-9]*_[0-9]*" | wc -l)
+    local deleted_count=0
+    while IFS= read -r -d '' file; do
+        rm "$file"
+        deleted_count=$((deleted_count + 1))
+        log "Deleted old backup: $(basename "$file")"
+    done < <(find "$BACKUP_DIR" -name "aegisflows_backup_*.tar.gz" -mtime +$RETENTION_DAYS -print0 2>/dev/null)
     
-    log_success "Cleanup completed. $remaining_backups backup(s) remaining."
+    if [[ $deleted_count -gt 0 ]]; then
+        success "Cleaned up $deleted_count old backup(s)"
+    else
+        log "No old backups to clean up"
+    fi
 }
 
-# Calculate backup size
-calculate_size() {
-    local size
-    size=$(du -sh "$BACKUP_DIR" | cut -f1)
-    log_success "Backup completed! Total size: $size"
-    log_success "Backup location: $BACKUP_DIR"
+# Verify services are running
+verify_services() {
+    log "Verifying services are running..."
+    
+    local services_ok=true
+    
+    if ! docker ps | grep -q iam-postgres; then
+        error "PostgreSQL container is not running"
+        services_ok=false
+    fi
+    
+    if ! docker ps | grep -qE "iam-keycloak-(dev|prod)"; then
+        error "Keycloak container is not running"
+        services_ok=false
+    fi
+    
+    if [[ "$services_ok" == "false" ]]; then
+        error "Some services are not running. Backup may be incomplete."
+        read -p "Continue anyway? [y/N]: " confirm
+        if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+            exit 1
+        fi
+    else
+        success "All services are running"
+    fi
+}
+
+# Display backup summary
+display_summary() {
+    local backup_archive="$1"
+    
+    echo ""
+    echo -e "${GREEN}🎉 Backup Completed Successfully!${NC}"
+    echo -e "${GREEN}=================================${NC}"
+    echo ""
+    echo -e "${BLUE}Backup Details:${NC}"
+    echo "Archive: $(basename "$backup_archive")"
+    echo "Location: $backup_archive"
+    echo "Size: $(du -h "$backup_archive" | cut -f1)"
+    echo "Created: $(date)"
+    echo ""
+    echo -e "${BLUE}Restore Command:${NC}"
+    echo "make restore BACKUP_FILE=$backup_archive"
+    echo ""
+    echo -e "${BLUE}Available Backups:${NC}"
+    ls -lh "$BACKUP_DIR"/aegisflows_backup_*.tar.gz 2>/dev/null | tail -5 || echo "No previous backups found"
 }
 
 # Main backup function
 main() {
-    log "Starting AegisFlows backup..."
-    log "Timestamp: $TIMESTAMP"
+    echo -e "${BLUE}AegisFlows - Backup System${NC}"
+    echo -e "${BLUE}==========================${NC}"
+    echo ""
     
-    check_docker
-    check_services
-    create_backup_dir
+    # Verify services
+    verify_services
     
-    if [[ "$DATA_ONLY" != "true" ]]; then
-        backup_database
+    # Create backup directory structure
+    local backup_path
+    backup_path=$(create_backup_dir)
+    
+    # Perform backups
+    local backup_success=true
+    
+    if ! backup_database "$backup_path"; then
+        backup_success=false
     fi
     
-    if [[ "$DB_ONLY" != "true" ]]; then
-        backup_keycloak_data
-        backup_config
-    fi
+    backup_config "$backup_path"
+    backup_logs "$backup_path"
+    create_manifest "$backup_path"
     
-    create_manifest
-    calculate_size
-    cleanup_old_backups
-    
-    log_success "Backup process completed successfully!"
-    
-    # Output final location for scripting
-    if [[ "$QUIET" == "true" ]]; then
-        echo "$BACKUP_DIR"
+    # Compress backup
+    local backup_archive="${backup_path}.tar.gz"
+    if compress_backup "$backup_path"; then
+        # Clean old backups
+        cleanup_old_backups
+        
+        # Display summary
+        display_summary "$backup_archive"
+        
+        if [[ "$backup_success" == "true" ]]; then
+            exit 0
+        else
+            warning "Backup completed with some issues"
+            exit 1
+        fi
+    else
+        error "Backup compression failed"
+        exit 1
     fi
 }
-
-# Error handling
-trap 'log_error "Backup failed with error on line $LINENO. Exit code: $?"' ERR
 
 # Run main function
 main "$@"

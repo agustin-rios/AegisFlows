@@ -1,63 +1,93 @@
-# Quick Start Guide
+# ⚡ AegisFlows Quick Start
 
-Este es un resumen rápido para comenzar con el servicio IAM.
+Get your dynamic IAM platform running in under 2 minutes!
 
-## Pasos Rápidos
+## 🚀 Zero-to-Ready Setup
 
-1. **Clonar el repositorio**
+1. **Clone & Setup**
    ```bash
    git clone https://github.com/agustin-rios/AegisFlows.git
    cd AegisFlows
+   make setup
    ```
 
-2. **Iniciar los servicios**
-   ```bash
-   docker compose up -d
-   ```
+2. **That's it!** The `make setup` command automatically:
+   - ✅ Validates system requirements
+   - ✅ Starts PostgreSQL + Keycloak services
+   - ✅ Auto-detects and imports your realm configuration
+   - ✅ Configures OAuth providers (if credentials provided)
 
-3. **Esperar a que los servicios estén listos** (1-2 minutos)
-   ```bash
-   docker compose ps
-   ```
+3. **Access Your System**
+   - **Keycloak Admin**: <http://localhost:8080/admin> (admin/admin)
+   - **Your Realm**: <http://localhost:8080/realms/{detected-realm-name}>
+   - **Account Console**: <http://localhost:8080/realms/{detected-realm-name}/account>
 
-4. **Acceder a Keycloak**
-   - URL: http://localhost:8080
-   - Usuario: `admin`
-   - Contraseña: `admin`
-
-## Servicios
-
-- **Keycloak**: http://localhost:8080
-- **PostgreSQL**: localhost:5432
-
-## Comandos Útiles
+## 🛠️ Essential Commands
 
 ```bash
-# Ver logs
-docker compose logs -f
+# Check system status
+make status
 
-# Detener servicios
-docker compose down
+# View logs
+make logs
 
-# Detener y eliminar datos
-docker compose down -v
+# Stop services
+make stop
+
+# Complete cleanup (⚠️ removes all data)
+make clean
+
+# Get help with all commands
+make help
 ```
 
-## Configuración Personalizada
+## 🔧 Custom Configuration
 
-Copia y modifica el archivo de entorno:
+### Option 1: Quick OAuth Setup
+
+Edit `.env` with your OAuth credentials:
+
 ```bash
-cp .env.example .env
+# GitHub OAuth (optional)
+GITHUB_CLIENT_ID=your-actual-github-client-id
+GITHUB_CLIENT_SECRET=your-actual-github-client-secret
+
+# Google OAuth (optional)  
+GOOGLE_CLIENT_ID=your-actual-google-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-actual-google-client-secret
 ```
 
-Luego edita `.env` con tus valores personalizados.
+Then update secrets: `make realm-import`
 
-## Solución de Problemas
+### Option 2: Multiple Realms
 
-Si los servicios no inician correctamente:
+Add any realm configuration to `config/realms/`:
 
-1. Verifica que Docker esté corriendo
-2. Asegúrate de que los puertos 8080 y 5432 estén disponibles
-3. Revisa los logs: `docker compose logs`
+```bash
+# Import specific realm
+make realm-import REALM=your-custom-realm.json
 
-Para más información, consulta el [README.md](README.md) completo.
+# Auto-detect and import first found
+make realm-import
+```
+
+## 🩺 Troubleshooting
+
+**Services won't start?**
+
+```bash
+make check-requirements  # Validate system
+make logs                # Check error messages
+```
+
+**Can't access Keycloak?**
+
+1. Verify containers: `docker ps`
+2. Check ports: `lsof -i :8080` (Linux/Mac)
+3. Try alternative: <http://127.0.0.1:8080>
+
+**Need help?** Check the comprehensive [README.md](README.md) guide.
+
+---
+
+🎯 **Next Steps**: Configure OAuth credentials, add custom realms, or explore the [full documentation](README.md)!

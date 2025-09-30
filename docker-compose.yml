@@ -3,183 +3,93 @@ x-keycloak-common: &keycloak-common
   env_file:
     - .env
   environment:
-    # Database Configuration
     KC_DB: postgres
-    KC_DB_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB:-keycloak}?sslmode=disable&prepareThreshold=0"
-    KC_DB_USERNAME: ${POSTGRES_USER:-keycloak}
-    KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-keycloak}
-    KC_DB_POOL_INITIAL_SIZE: ${KC_DB_POOL_INITIAL_SIZE:-5}
-    KC_DB_POOL_MAX_SIZE: ${KC_DB_POOL_MAX_SIZE:-20}
-    KC_DB_POOL_MIN_SIZE: ${KC_DB_POOL_MIN_SIZE:-5}
-    
-    # Admin Configuration
-    KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
-    KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
-    
-    # Network Configuration
-    KC_HOSTNAME: ${KC_HOSTNAME:-localhost}
-    KC_PROXY: edge
-    KC_HTTP_RELATIVE_PATH: /auth
-    
-    # Feature Configuration
+    KC_DB_URL: "jdbc:postgresql://postgres:5432/${DB_NAME}"
+    KC_DB_USERNAME: ${DB_USER}
+    KC_DB_PASSWORD: ${DB_PASSWORD}
+    KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+    KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+    KC_HOSTNAME: ${KEYCLOAK_HOSTNAME}
     KC_HEALTH_ENABLED: true
     KC_METRICS_ENABLED: true
-    KC_FEATURES: "preview,admin-fine-grained-authz,token-exchange,declarative-user-profile"
-    
-    # Logging Configuration
+    KC_PROXY: passthrough
+    KC_FEATURES: "preview,admin-fine-grained-authz,token-exchange"
     KC_LOG_LEVEL: INFO
     KC_LOG_CONSOLE_COLOR: true
-    KC_LOG_CONSOLE_FORMAT: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"
-    
-    # Performance Configuration
-    JAVA_OPTS_APPEND: ${JAVA_OPTS_APPEND:--Xms512m -Xmx1024m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m}
-    
   ports:
-    - "${KEYCLOAK_PORT:-8080}:8080"
-    - "${KEYCLOAK_MGMT_PORT:-9000}:9000"
+    - "${KEYCLOAK_PORT}:8080"
+    - "${KEYCLOAK_MGMT_PORT}:9000"
   depends_on:
     postgres:
       condition: service_healthy
   networks:
     - iam-network
   volumes:
-    - ./config/realms:/opt/keycloak/data/import:ro
-    - ./themes:/opt/keycloak/themes:ro
-    - keycloak_data:/opt/keycloak/data
-  healthcheck:
-    test: ["CMD-SHELL", "curl -f http://localhost:9000/health/ready || exit 1"]
-    interval: 30s
-    timeout: 10s
-    retries: 3
-    start_period: 60s
-  deploy:
-    resources:
-      limits:
-        memory: 1.5G
-        cpus: '1.0'
-      reservations:
-        memory: 512M
-        cpus: '0.5'
+      - ./config/realms:/opt/keycloak/data/import:ro
+      - ./themes:/opt/keycloak/themes:ro
+      - keycloak_data:/opt/keycloak/data
 
 services:
   postgres:
-    image: postgres:15.7-alpine
+    image: postgres:15-alpine
     container_name: iam-postgres
     restart: unless-stopped
     env_file:
       - .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-keycloak}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-keycloak}
-      POSTGRES_DB: ${POSTGRES_DB:-keycloak}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C --auth-host=scram-sha-256"
-      # Performance tuning
-      POSTGRES_SHARED_PRELOAD_LIBRARIES: "pg_stat_statements"
-      # Connection settings
-      POSTGRES_MAX_CONNECTIONS: 100
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
-      - ./scripts/postgresql.conf:/etc/postgresql/postgresql.conf:ro
-    command: >
-      postgres
-      -c shared_preload_libraries=pg_stat_statements
-      -c pg_stat_statements.track=all
-      -c max_connections=100
-      -c shared_buffers=256MB
-      -c effective_cache_size=1GB
-      -c maintenance_work_mem=64MB
-      -c checkpoint_completion_target=0.9
-      -c wal_buffers=16MB
-      -c default_statistics_target=100
-      -c random_page_cost=1.1
-      -c effective_io_concurrency=200
-      -c work_mem=4MB
-      -c min_wal_size=1GB
-      -c max_wal_size=4GB
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h localhost"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
     networks:
       - iam-network
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '0.5'
-        reservations:
-          memory: 256M
-          cpus: '0.25'
 
-  keycloak:
+  keycloak-dev:
+    profiles: ["dev"]
     <<: *keycloak-common
     build:
       context: .
       dockerfile: Dockerfile.dev
-      args:
-        KC_VERSION: 26.1.2
-    container_name: iam-keycloak
+    container_name: iam-keycloak-dev
     environment:
-      # Development-specific settings
       KC_HOSTNAME_STRICT: false
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HTTP_ENABLED: true
-      KC_HTTP_COOKIE_SAME_SITE: Lax
+      KC_HTTP_COOKIE_SAME_SITE: LAX
       KC_HTTP_COOKIE_SECURE: false
-      
-      # Cache settings for development
       KC_THEME_CACHE_THEMES: false
       KC_THEME_CACHE_TEMPLATES: false
-      KC_CACHE_CONFIG_FILE: cache-ispn-jdbc-ping.xml
-      
-      # Development debugging
-      KC_LOG_LEVEL: DEBUG
-      KC_DB_LOG_SLOW_QUERIES: true
 
   keycloak-prod:
     profiles: ["prod"]
     <<: *keycloak-common
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        KC_VERSION: 26.1.2
+      dockerfile: Dockerfile.prod
     container_name: iam-keycloak-prod
     environment:
-      # Production security settings
       KC_HOSTNAME_STRICT: true
       KC_HOSTNAME_STRICT_HTTPS: true
-      KC_HTTP_ENABLED: false
-      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt
-      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key
-      
-      # Production performance settings
-      KC_THEME_CACHE_THEMES: true
-      KC_THEME_CACHE_TEMPLATES: true
-      KC_CACHE_CONFIG_FILE: cache-ispn-jdbc-ping.xml
-      
-      # Security headers
-      KC_HTTP_COOKIE_SAME_SITE: Strict
-      KC_HTTP_COOKIE_SECURE: true
-      
-      # Production logging
-      KC_LOG_LEVEL: WARN
-      KC_DB_LOG_SLOW_QUERIES: false
-    ports:
-      - "${KEYCLOAK_HTTPS_PORT:-8443}:8443"
-      - "${KEYCLOAK_MGMT_PORT:-9000}:9000"
+
+
 
 networks:
   iam-network:
     driver: bridge
+    name: iam-network
 
 volumes:
   postgres_data:
-    driver: local
+    name: iam-postgres-data
   keycloak_data:
     name: iam-keycloak-data
