@@ -6,8 +6,8 @@ Este es un resumen rápido para comenzar con el servicio IAM.
 
 1. **Clonar el repositorio**
    ```bash
-   git clone https://github.com/agustin-rios/iam.git
-   cd iam
+   git clone https://github.com/agustin-rios/AegisFlows.git
+   cd AegisFlows
    ```
 
 2. **Iniciar los servicios**

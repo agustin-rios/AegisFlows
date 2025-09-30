@@ -1,4 +1,4 @@
-# IAM - Identity and Access Management Service
+# AegisFlows - Identity and Access Management Service
 
 Estudio del uso de Keycloak como servicio para manejar profiles y centralizar servicios IAM.
 
@@ -20,38 +20,57 @@ Este proyecto proporciona un servicio IAM listo para ejecutar utilizando Keycloa
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/agustin-rios/iam.git
-cd iam
+git clone https://github.com/agustin-rios/AegisFlows.git
+cd AegisFlows
 ```
 
-### 2. Configurar variables de entorno (opcional)
-
-Copia el archivo de ejemplo y modifica según sea necesario:
+### 2. Instalación automática
 
 ```bash
-cp .env.example .env
+make install
+```
+
+### 3. Configurar variables de entorno (recomendado)
+
+El comando `make install` crea automáticamente un archivo `.env` desde `.env.example`. Edítalo según sea necesario:
+
+```bash
+nano .env  # o tu editor preferido
 ```
 
 Variables disponibles:
 - `POSTGRES_DB`: Nombre de la base de datos (default: keycloak)
 - `POSTGRES_USER`: Usuario de PostgreSQL (default: keycloak)
 - `POSTGRES_PASSWORD`: Contraseña de PostgreSQL (default: keycloak)
+- `DB_PORT`: Puerto del servicio PostgreSQL expuesto localmente (default: 5432)
 - `KEYCLOAK_ADMIN`: Usuario administrador de Keycloak (default: admin)
 - `KEYCLOAK_ADMIN_PASSWORD`: Contraseña del administrador (default: admin)
 - `KC_HOSTNAME`: Hostname para Keycloak (default: localhost)
+- `KEYCLOAK_PORT`: Puerto HTTP de Keycloak (default: 8080)
+- `KEYCLOAK_MGMT_PORT`: Puerto de gestión y métricas (default: 9000)
 
 ⚠️ **Importante**: Cambia las contraseñas predeterminadas en entornos de producción.
 
-### 3. Iniciar los servicios
+### 4. Validar la configuración
 
 ```bash
-docker-compose up -d
+make validate
+```
+
+### 5. Iniciar los servicios
+
+```bash
+# Desarrollo
+make dev
+
+# O manualmente
+docker compose up -d
 ```
 
 ### 4. Verificar el estado de los servicios
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 Los servicios deberían estar en estado "healthy" después de aproximadamente 1-2 minutos.
@@ -70,40 +89,57 @@ Credenciales por defecto:
 
 ## Comandos Útiles
 
-### Ver logs de los servicios
+Este proyecto incluye un Makefile con comandos convenientes:
+
+### Comandos principales
 
 ```bash
-# Todos los servicios
-docker-compose logs -f
-
-# Solo Keycloak
-docker-compose logs -f keycloak
-
-# Solo PostgreSQL
-docker-compose logs -f postgres
+make help          # Mostrar ayuda
+make dev           # Iniciar entorno de desarrollo  
+make prod          # Iniciar entorno de producción
+make monitoring    # Iniciar con stack de monitoreo
+make stop          # Detener servicios
+make clean         # Detener y eliminar datos (¡PÉRDIDA DE DATOS!)
 ```
 
-### Detener los servicios
+### Logs y monitoreo
 
 ```bash
-docker-compose down
+make logs          # Ver logs de todos los servicios
+make logs-keycloak # Ver logs solo de Keycloak
+make logs-postgres # Ver logs solo de PostgreSQL
+make status        # Estado de los servicios
+make health        # Verificar salud de los servicios
 ```
 
-### Detener y eliminar todos los datos (incluyendo la base de datos)
+### Operaciones de base de datos
 
 ```bash
-docker-compose down -v
+make backup        # Crear backup de la base de datos
+make restore BACKUP_FILE=archivo.sql  # Restaurar backup
+make psql          # Conectar a PostgreSQL
 ```
 
-### Reiniciar un servicio específico
+### Comandos legacy (Docker Compose directo)
 
 ```bash
-docker-compose restart keycloak
+# Ver logs
+docker compose logs -f
+
+# Detener servicios  
+docker compose down
+
+# Detener y eliminar datos
+docker compose down -v
+
+# Reiniciar servicio específico
+docker compose restart keycloak
 ```
 
 ## Puertos Expuestos
 
 - **8080**: Consola de administración de Keycloak y API
+- **9000**: Puerto de métricas y administración interna de Keycloak
 - **5432**: PostgreSQL (opcional, para acceso directo a la base de datos)
 
 ## Arquitectura
@@ -126,44 +162,45 @@ docker-compose restart keycloak
 
 ### Modo Producción
 
-Para ejecutar en modo producción, modifica el comando en `docker-compose.yml`:
+Activa el perfil `prod` para construir la imagen optimizada definida en `Dockerfile`:
 
-```yaml
-command: start --optimized
+```bash
+docker compose --profile prod up -d keycloak-prod
 ```
 
-Y configura adecuadamente:
-- Certificados SSL/TLS
-- Variables de entorno de producción
-- Límites de recursos
-- Backups de la base de datos
+Al usar la imagen optimizada asegúrate de:
+- Configurar certificados SSL/TLS y un proxy inverso
+- Ajustar variables de entorno y contraseñas seguras
+- Definir límites de recursos y monitoreo
+- Establecer un plan de backups para la base de datos
 
 ### Personalización
 
 Puedes personalizar Keycloak mediante:
-- Variables de entorno adicionales
-- Temas personalizados (montando volúmenes)
-- Providers personalizados
-- Configuración de realms mediante archivos JSON
+- Variables de entorno adicionales (ver documentación oficial)
+- Archivos JSON en `config/realms/` que se importan automáticamente al iniciar
+- Temas personalizados dentro de `themes/`
+- Ajustes de base de datos editando `scripts/init-db.sh`
+- Providers personalizados montados en `/opt/keycloak/providers`
 
 ## Health Checks
 
-Ambos servicios incluyen health checks:
+Los servicios exponen endpoints de salud para integrarlos con tu plataforma de observabilidad:
 
-- **PostgreSQL**: Verifica que la base de datos responde
-- **Keycloak**: Verifica el endpoint `/health/ready`
+- **PostgreSQL**: El healthcheck de Compose usa `pg_isready` para validar la conexión
+- **Keycloak**: Con `KC_HEALTH_ENABLED=true` queda disponible `/health/ready`
 
 ## Troubleshooting
 
 ### Keycloak no inicia
 
-1. Verifica que PostgreSQL esté healthy: `docker-compose ps`
-2. Revisa los logs: `docker-compose logs keycloak`
+1. Verifica que PostgreSQL esté healthy: `docker compose ps`
+2. Revisa los logs: `docker compose logs keycloak`
 3. Asegúrate de tener suficiente memoria disponible
 
 ### No puedo acceder a localhost:8080
 
-1. Verifica que el contenedor esté corriendo: `docker-compose ps`
+1. Verifica que el contenedor esté corriendo: `docker compose ps`
 2. Verifica que el puerto no esté en uso: `lsof -i :8080` (Linux/Mac) o `netstat -ano | findstr :8080` (Windows)
 3. Prueba acceder a `http://127.0.0.1:8080`
 
@@ -171,7 +208,7 @@ Ambos servicios incluyen health checks:
 
 1. Verifica que PostgreSQL esté healthy
 2. Verifica las variables de entorno en `.env`
-3. Reinicia los servicios: `docker-compose restart`
+3. Reinicia los servicios: `docker compose restart`
 
 ## Contribuir
 
@@ -198,4 +235,4 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 
 Agustin Rios - [@agustin-rios](https://github.com/agustin-rios)
 
-Project Link: [https://github.com/agustin-rios/iam](https://github.com/agustin-rios/iam)
+Project Link: [https://github.com/agustin-rios/AegisFlows](https://github.com/agustin-rios/AegisFlows)
