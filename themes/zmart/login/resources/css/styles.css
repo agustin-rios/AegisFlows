@@ -1,4 +1,4 @@
-/* ZMART · Tema de Login con Light/Dark Mode - Adaptado de demo-login.html */
+/* ZMART · Tema de Login con modo claro/oscuro automático */
 
 /* ====== Variables de Color ====== */
 :root {
@@ -82,76 +82,13 @@ body {
   background: var(--bg-primary);
   line-height: 1.45;
   transition: background-color 0.3s ease, color 0.3s ease;
+  color-scheme: light dark;
 }
 a { color: inherit; text-decoration: none; }
 button, input { font: inherit; }
 
-/* ====== Theme Toggle ====== */
-.theme-toggle {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 50px;
-  padding: 8px 16px;
-  transition: all 0.3s ease;
-}
-
-.theme-toggle:hover {
-  background: var(--glass-bg);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-}
-
-.toggle-switch {
-  position: relative;
-  width: 50px;
-  height: 26px;
-  background: var(--border-color);
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.toggle-switch.active {
-  background: var(--brick-500);
-}
-
-.toggle-slider {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 20px;
-  height: 20px;
-  background: white;
-  border-radius: 50%;
-  transition: transform 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-}
-
-.toggle-switch.active .toggle-slider {
-  transform: translateX(24px);
-}
-
-.theme-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  min-width: 60px;
-}
-
 /* ====== Layout dividido ====== */
-.layout, #kc-login {
+.layout, #kc-page {
   display: grid;
   grid-template-columns: 1fr 1fr;
   min-height: 100vh;
@@ -207,7 +144,7 @@ button, input { font: inherit; }
   display:flex; flex-direction:column; gap: 16px;
 }
 .title, #kc-page-title {
-  margin: 16px 0 4px;
+  margin: 0 0 2px;
   font-size: clamp(26px, 3.2vw, 34px);
   font-weight: 800;
   color: var(--text-primary);
@@ -268,7 +205,10 @@ button, input { font: inherit; }
   accent-color: var(--brick-500);
 }
 
-.actions, .kcFormButtonsClass{ display:flex; flex-direction:column; gap: 12px; margin-top: 8px; }
+.actions, .kcFormButtonsClass{ 
+  display:flex; flex-direction:column; gap: 12px; margin-top: 8px;
+  width: 100%;
+}
 
 .btn, .kcButtonClass{
   display:inline-flex; align-items:center; justify-content:center; gap:.65rem;
@@ -277,17 +217,21 @@ button, input { font: inherit; }
   transition: all 0.3s ease;
   background: var(--input-bg);
   color: var(--text-primary);
+  min-height: 44px;
+  font-size: 14px;
+  line-height: 1.2;
+  text-align: center;
 }
 .btn:hover, .kcButtonClass:hover{ 
   transform:translateY(-2px); 
   box-shadow: var(--shadow-hover); 
 }
-.btn.login, .kcButtonPrimaryClass, #kc-login{ 
+.btn.login, .kcButtonPrimaryClass{ 
   background: var(--brick-500); 
   color: #ffffff;
   border-color: var(--brick-500);
 }
-.btn.login:hover, .kcButtonPrimaryClass:hover, #kc-login:hover{ 
+.btn.login:hover, .kcButtonPrimaryClass:hover{ 
   filter: brightness(0.96); 
   box-shadow: var(--shadow-hover);
 }
@@ -363,7 +307,7 @@ button, input { font: inherit; }
   color: #ef4444;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-sm);
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   font-size: 0.875rem;
   transition: all 0.3s ease;
 }
@@ -374,7 +318,7 @@ button, input { font: inherit; }
   color: #10b981;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-sm);
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   font-size: 0.875rem;
   transition: all 0.3s ease;
 }
@@ -385,56 +329,48 @@ button, input { font: inherit; }
   color: var(--blue-600);
   padding: 0.75rem 1rem;
   border-radius: var(--radius-sm);
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   font-size: 0.875rem;
   transition: all 0.3s ease;
 }
 
+.alert-warning {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #c2410c;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.kcInputErrorMessageClass {
+  margin-top: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.status-messages {
+  width: 100%;
+  min-height: 24px;
+  display: flex;
+  align-items: flex-start;
+  margin: 4px 0 8px;
+}
+
+.status-messages > * {
+  width: 100%;
+}
+
 /* ====== Responsive ====== */
 @media (max-width: 980px){
-  .layout, #kc-login{ grid-template-columns: 1fr; }
+  .layout, #kc-page { grid-template-columns: 1fr; }
   .pane--right, #kc-info{ min-height: 46vh; order: 2; }
-  
-  .theme-toggle {
-    top: 16px;
-    right: 16px;
-    padding: 6px 12px;
-  }
-  
-  .theme-label {
-    font-size: 12px;
-    min-width: 50px;
-  }
-  
-  .toggle-switch {
-    width: 40px;
-    height: 22px;
-  }
-  
-  .toggle-slider {
-    width: 16px;
-    height: 16px;
-    top: 3px;
-    left: 3px;
-    font-size: 10px;
-  }
-  
-  .toggle-switch.active .toggle-slider {
-    transform: translateX(18px);
-  }
 }
 
 @media (max-width: 640px) {
   .pane--left, #kc-form-card {
     padding: clamp(20px, 5vw, 32px);
-  }
-  
-  .theme-toggle {
-    position: relative;
-    top: auto;
-    right: auto;
-    margin-bottom: 20px;
-    align-self: flex-end;
   }
 }
 
@@ -446,6 +382,71 @@ button, input { font: inherit; }
 
 #kc-social-providers {
   margin-top: 1rem;
+}
+
+/* Simplified form styling */
+.form, #kc-form-login {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Prevenir overlay accidental */
+* {
+  box-sizing: border-box;
+}
+
+*:before, *:after {
+  box-sizing: border-box;
+}
+
+/* Fix específico para el layout de Keycloak */
+.pane--left, #kc-form-card {
+  overflow: visible;
+  max-height: none;
+}
+
+.form, #kc-form-login {
+  overflow: visible;
+}
+
+/* Asegurar que los botones tengan el tamaño correcto */
+.btn.login, .kcButtonPrimaryClass {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  min-height: 44px;
+  max-height: 50px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* CSS-only interactions - no JavaScript needed */
+.input:focus, .kcInputClass:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
+  outline: none;
+  border-color: var(--brick-500);
+  box-shadow: 0 0 0 2px rgba(196, 65, 12, 0.1);
+}
+
+.row:has(.input:focus), .row:has(.kcInputClass:focus) {
+  transform: translateY(-1px);
+}
+
+/* Social button animations with CSS only */
+.btn.google:hover, .kcFormSocialAccountLinkClass:hover, a[id^="social-"]:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+/* Auto-focus styling instead of JavaScript */
+.input[autofocus], input[autofocus] {
+  animation: subtle-pulse 0.3s ease-in-out;
+}
+
+@keyframes subtle-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(196, 65, 12, 0.4); }
+  70% { box-shadow: 0 0 0 4px rgba(196, 65, 12, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(196, 65, 12, 0); }
 }
 
 #kc-social-providers h4 {

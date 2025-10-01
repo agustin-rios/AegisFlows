@@ -14,9 +14,13 @@
                 <#else>
                     <#if client?? && client.baseUrl?has_content>
                         <a class="btn login" href="${client.baseUrl}">${kcSanitize(msg("backToApplication"))?no_esc}</a>
+                    <#else>
+                        <a class="btn login" href="${url.loginUrl}">Volver al inicio de sesión</a>
                     </#if>
                 </#if>
-                <a class="forgot" href="${url.loginUrl}">Volver al inicio de sesión</a>
+                <#if client?? && client.baseUrl?has_content>
+                    <a class="forgot" href="${url.loginUrl}">Intentar de nuevo</a>
+                </#if>
             </div>
         </div>
     </#if>

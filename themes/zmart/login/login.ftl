@@ -5,7 +5,7 @@
         <p class="subtitle">Ingresa tus credenciales para acceder a tu cuenta</p>
     <#elseif section = "form">
         <#if realm.password>
-            <form class="form" id="kc-form-login" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
+            <form class="form" id="kc-form-login" action="${url.loginAction}" method="post">
                 <#if !usernameHidden??>
                     <div class="row">
                         <div class="label-wrap">
@@ -92,40 +92,3 @@
     </#if>
 </@layout.registrationLayout>
 
-<script>
-function togglePassword() {
-    const passwordInput = document.getElementById('password');
-    const passwordIcon = document.getElementById('password-icon');
-    
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        passwordIcon.classList.remove('fa-eye');
-        passwordIcon.classList.add('fa-eye-slash');
-    } else {
-        passwordInput.type = 'password';
-        passwordIcon.classList.remove('fa-eye-slash');
-        passwordIcon.classList.add('fa-eye');
-    }
-}
-
-// Auto-focus on username field
-document.addEventListener('DOMContentLoaded', function() {
-    const usernameField = document.getElementById('username');
-    if (usernameField) {
-        usernameField.focus();
-    }
-});
-
-// Social login animation
-document.addEventListener('DOMContentLoaded', function() {
-    const socialLinks = document.querySelectorAll('.social-link');
-    socialLinks.forEach(link => {
-        link.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-2px)';
-        });
-        link.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
-});
-</script>

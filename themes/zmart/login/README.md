@@ -8,7 +8,6 @@ El módulo de login maneja todas las páginas relacionadas con autenticación y 
 login/
 ├── README.md                    # Este archivo
 ├── theme.properties            # Configuración del tema
-├── demo-login.html             # Demo de referencia (base del diseño)
 ├── template.ftl                # Plantilla base para todas las páginas
 ├── login.ftl                   # Página principal de inicio de sesión
 ├── register.ftl                # Página de registro de usuarios
@@ -72,11 +71,11 @@ login/
 
 **Características**:
 - Layout de dos columnas responsivo
-- Sistema de temas claro/oscuro con toggle
+- Modo claro/oscuro automático según `prefers-color-scheme`
 - Hero section con imagen y overlay
-- Container de formulario con glassmorphism
-- Font loading (Inter de Google Fonts)
-- JavaScript para manejo de temas
+- Contenedor de formulario con glassmorphism
+- Carga de fuentes (Inter) desde Google Fonts
+- Contenedor superior para mensajes de estado del servidor
 
 **Secciones**:
 - `header`: Título y subtítulo de la página
@@ -144,42 +143,26 @@ login/
 - Sin flujos complejos multi-paso
 
 ### link-*-account.ftl
-**Propósito**: Páginas para enlazar cuentas sociales (simplificadas).
+**Propósito**: Páginas para enlazar cuentas sociales.
 
 **Características**:
-- Diseño minimalista
-- Botón de acción principal
-- Información básica del proveedor
-- Enlaces de navegación
+- Reutilizan el layout estándar del formulario
+- Mensaje corto con instrucciones
+- Botón principal y enlace de regreso al login
 
 ## 🎯 Estilos CSS (styles.css)
 
 ### Estructura Principal
-```css
-/* Reset y base */
-* { box-sizing: border-box; }
-
-/* Layout de dos columnas */
-.layout { display: grid; grid-template-columns: 3fr 2fr; }
-
-/* Hero section */
-.hero { background-image: url('../img/background.png'); }
-
-/* Formulario con glassmorphism */
-.form-container { 
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-}
-```
+- Variables CSS definen la paleta brick/blue y transparencias para glassmorphism.
+- `.layout` (+ `#kc-page`) crea un grid de dos columnas que se apila en mobile.
+- `.pane--right` carga la imagen `resources/img/background.png` como hero.
+- `.container` y `#kc-content-wrapper` limitan el ancho del formulario.
 
 ### Componentes Principales
-
-#### Formularios
-- **`.form`**: Container principal del formulario
-- **`.row`**: Fila de campo de formulario
-- **`.label-wrap`**: Container del label
-- **`.input`**: Estilos de inputs
-- **`.btn`**: Botones principales y secundarios
+- `.form`, `.row`, `.label-wrap`, `.input`: estilos base reutilizados por todas las plantillas.
+- `.btn.login` y `.kcButtonPrimaryClass`: botones de acciones primarias.
+- `.status-messages` y variantes `.alert-*`: área para mensajes globales del servidor.
+- `.btn` y `.kcButtonClass`: botones principales y secundarios
 
 #### Estados Interactivos
 - **Hover**: Transiciones suaves en botones e inputs
@@ -188,31 +171,12 @@ login/
 - **Disabled**: Estados deshabilitados
 
 #### Responsive Design
-```css
-@media (max-width: 768px) {
-  .layout { grid-template-columns: 1fr; }
-  .hero { display: none; }
-}
-```
+- `@media (max-width: 980px)`: el grid pasa a una sola columna y el hero se coloca debajo del formulario.
+- `@media (max-width: 640px)`: se ajustan los paddings para conservar legibilidad en móviles.
 
 ## 🌙 Sistema de Temas
 
-### Implementación JavaScript
-```javascript
-// Detección automática del tema del sistema
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-
-// Toggle manual de tema
-function toggleTheme() {
-  const currentTheme = document.documentElement.getAttribute('data-theme');
-  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-}
-```
-
-### Variables Dinámicas
-Todas las variables CSS se actualizan automáticamente al cambiar el tema, proporcionando transiciones suaves entre modo claro y oscuro.
+El modo claro/oscuro se resuelve únicamente con CSS utilizando `prefers-color-scheme` y la propiedad `color-scheme` en `body`. No se requiere JavaScript.
 
 ## 📱 Responsividad
 

@@ -2,24 +2,13 @@
 <@layout.registrationLayout; section>
     <#if section = "header">
         ${msg("linkAccount", "Google")}
+        <p class="subtitle">Conecta tu cuenta Google para completar el inicio de sesión.</p>
     <#elseif section = "form">
-        <div class="link-provider-container">
-            <div class="provider-info">
-                <i class="fab fa-google" style="color: #ea4335; font-size: 3rem;"></i>
-                <h2>Link Google Account</h2>
-                <p>Connect your Google account for easier sign-in and enhanced security.</p>
-            </div>
-
-            <form action="${url.requiredActionUrl}" method="post">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fab fa-google"></i>
-                    ${msg("linkAccount", "Google")}
-                </button>
-            </form>
-
+        <form class="form" action="${url.requiredActionUrl}" method="post">
             <div class="actions">
+                <button type="submit" class="btn login">${msg("linkAccount", "Google")}</button>
                 <a href="${url.loginUrl}" class="forgot">${msg("backToLogin")}</a>
             </div>
-        </div>
+        </form>
     </#if>
 </@layout.registrationLayout>

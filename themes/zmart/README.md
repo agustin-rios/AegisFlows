@@ -35,10 +35,16 @@ themes/zmart/
     ├── theme.properties        # Configuración del tema login
     ├── demo-login.html         # Demo de referencia del diseño
     ├── error.ftl               # Página de errores
+    ├── info.ftl                # Página de información
     ├── invitation-register.ftl # Registro por invitación
     ├── link-github-account.ftl # Enlace cuenta GitHub
     ├── link-google-account.ftl # Enlace cuenta Google
+    ├── login-config-totp.ftl   # Configuración 2FA
+    ├── login-otp.ftl           # Verificación OTP
     ├── login-reset-password.ftl # Reset de contraseña
+    ├── login-update-password.ftl # Actualizar contraseña
+    ├── login-update-profile.ftl # Actualizar perfil
+    ├── login-verify-email.ftl  # Verificación de email
     ├── login.ftl               # Página de login principal
     ├── register.ftl            # Página de registro
     ├── template.ftl            # Plantilla base
@@ -265,6 +271,210 @@ Las variables se adaptan automáticamente:
 - Diseño responsivo mejorado
 - Documentación completa de módulos
 
+## 🐛 Troubleshooting
+
+### Errores Comunes de Configuración
+
+#### ❌ Parameter 'client_id' not present
+**Síntoma**: `Parameter 'client_id' not present or present multiple times`
+
+**Soluciones**:
+1. **Verificar configuración del cliente**:
+   ```bash
+   # En la consola de administración
+   Clients > [tu-cliente] > Settings
+   # Asegurar que Client ID esté configurado correctamente
+   ```
+
+2. **Revisar URLs de redirect**:
+   ```
+   Valid Redirect URIs: http://localhost:8080/*
+   Web Origins: http://localhost:8080
+   ```
+
+3. **Verificar configuración de la aplicación**:
+   ```javascript
+   // Ejemplo configuración correcta
+   const keycloak = new Keycloak({
+     url: 'http://localhost:8080',
+     realm: 'zmart',
+     clientId: 'tu-client-id' // Debe coincidir exactamente
+   });
+   ```
+
+#### ❌ Invalid Code / Cookie Not Found
+**Síntoma**: `error="invalid_code"` o `error="cookie_not_found"`
+
+**Soluciones**:
+1. **Limpiar cookies del navegador**:
+   - Borrar cookies de `localhost:8080`
+   - Usar modo incógnito para testing
+
+2. **Verificar configuración de sesión**:
+   ```bash
+   # En Realm Settings > Sessions
+   SSO Session Idle: 30 minutos
+   SSO Session Max: 10 horas
+   ```
+
+3. **Revisar configuración de HTTPS**:
+   ```bash
+   # Para desarrollo local
+   --hostname-strict=false
+   --hostname=localhost
+   ```
+
+#### ❌ Tema no se aplica correctamente
+**Síntomas**: Estilos por defecto de Keycloak aparecen en lugar del tema ZMart
+
+**Soluciones**:
+1. **Verificar ubicación del tema**:
+   ```bash
+   # Estructura correcta
+   {KEYCLOAK_HOME}/themes/zmart/
+   ├── login/
+   ├── account/
+   ├── admin/
+   └── email/
+   ```
+
+2. **Limpiar caché de Keycloak**:
+   ```bash
+   # Reiniciar Keycloak completamente
+   make restart
+   
+   # O limpiar caché manualmente
+   rm -rf {KEYCLOAK_HOME}/standalone/tmp/
+   ```
+
+3. **Verificar selección de tema en realm**:
+   ```bash
+   # En Realm Settings > Themes
+   Login Theme: zmart
+   Account Theme: zmart
+   Admin Console Theme: zmart
+   Email Theme: zmart
+   ```
+
+### Comandos de Diagnóstico
+
+#### Verificar estado del contenedor
+```bash
+# Ver logs en tiempo real
+make logs
+
+# Verificar estado de servicios
+make status
+
+# Reiniciar servicios
+make restart
+```
+
+#### Verificar configuración del realm
+```bash
+# Exportar configuración actual
+make realm-export REALM=zmart.json
+
+# Verificar configuración
+cat config/realms/zmart.json | jq '.themes'
+```
+
+#### Testing del tema
+```bash
+# Construir y probar
+make build
+make test-theme
+
+# Verificar archivos del tema
+ls -la themes/zmart/*/
+```
+
+### Logs de Debugging
+
+#### Habilitar logging detallado
+```bash
+# En keycloak.conf o variables de entorno
+KC_LOG_LEVEL=DEBUG
+KC_LOG_CONSOLE_COLOR=true
+
+# Para temas específicamente
+KC_LOG_THEME_DEBUG=true
+```
+
+#### Logs importantes a revisar
+```bash
+# Errores de autenticación
+grep "LOGIN_ERROR" logs/keycloak.log
+
+# Problemas de configuración
+grep "WARN.*theme" logs/keycloak.log
+
+# Errores de carga de recursos
+grep "404.*css\|js" logs/keycloak.log
+```
+
+### Validación de Configuración
+
+#### Checklist de verificación
+- [ ] Tema ZMart está en la ubicación correcta
+- [ ] Permisos de archivos son correctos (755 para directorios, 644 para archivos)
+- [ ] Realm tiene el tema seleccionado correctamente
+- [ ] Cliente tiene URLs de redirect configuradas
+- [ ] No hay conflictos de caché del navegador
+- [ ] Keycloak está ejecutándose sin errores críticos
+
+#### URLs de testing
+```bash
+# Login page
+http://localhost:8080/realms/zmart/protocol/openid-connect/auth?client_id=account
+
+# Account management
+http://localhost:8080/realms/zmart/account
+
+# Admin console
+http://localhost:8080/admin/zmart/console
+```
+
+### Problemas Conocidos
+
+#### 🔧 Problemas de redirección desde otras páginas de Keycloak
+**Síntoma**: Login funciona directamente pero falla cuando redirige desde otras páginas
+**Causa**: Plantillas FTL faltantes o configuración incorrecta en theme.properties
+**Solución**:
+```bash
+# Verificar que todas las plantillas FTL estén presentes
+ls themes/zmart/login/*.ftl
+
+# Reiniciar Keycloak después de añadir plantillas
+make restart
+
+# Plantillas críticas para redirecciones:
+# - login-update-password.ftl
+# - login-update-profile.ftl  
+# - login-verify-email.ftl
+# - login-otp.ftl
+# - info.ftl
+```
+
+#### 🔧 Realm API retorna 404 después de import exitoso
+**Síntoma**: `curl http://localhost:8080/realms/zmart/.well-known/openid_configuration` retorna 404
+**Causa**: La importación de realm puede tardar algunos minutos en propagarse
+**Solución**: 
+```bash
+# Esperar 2-3 minutos después del import
+# Usar el admin console para verificar: http://localhost:8080/admin/
+# Verificar que el realm aparece en el dropdown superior izquierdo
+```
+
+#### 🔧 Glassmorphism no funciona en navegadores antiguos
+**Solución**: El tema incluye fallbacks automáticos para navegadores sin soporte de `backdrop-filter`
+
+#### 🔧 Modo oscuro no persiste
+**Solución**: Verificar que JavaScript esté habilitado y localStorage funcione correctamente
+
+#### 🔧 Responsive layout roto en móvil
+**Solución**: Limpiar caché del navegador y verificar que CSS se carga completamente
+
 ## 🤝 Contribución
 
 Para contribuir al tema:
@@ -275,4 +485,8 @@ Para contribuir al tema:
 
 ## 📞 Soporte
 
-Para soporte o preguntas sobre el tema, contacta al equipo de desarrollo.
+Para soporte o preguntas sobre el tema:
+- **Issues**: Reportar problemas en el repositorio
+- **Logs**: Incluir siempre logs relevantes en reportes de errores
+- **Configuración**: Compartir configuración relevante (sin credenciales)
+- **Ambiente**: Especificar versión de Keycloak y navegador usado

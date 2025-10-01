@@ -41,17 +41,7 @@
 </head>
 
 <body>
-  <!-- Theme Toggle -->
-  <div class="theme-toggle">
-    <span class="theme-label" id="theme-label">Light</span>
-    <div class="toggle-switch" id="theme-switch">
-      <div class="toggle-slider">
-        <span id="theme-icon">☀️</span>
-      </div>
-    </div>
-  </div>
-
-  <main class="layout" id="kc-login">
+  <main class="layout" id="kc-page">
     <!-- Lado Izquierdo: formulario -->
     <section class="pane pane--left" id="kc-form-card">
       <div class="container" id="kc-content-wrapper">
@@ -93,11 +83,13 @@
           </#if>
         </#if>
 
-        <#if displayMessage && message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
-          <div class="alert-${message.type}">
-            <span>${kcSanitize(message.summary)?no_esc}</span>
-          </div>
-        </#if>
+        <div class="status-messages" aria-live="polite">
+          <#if displayMessage && message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
+            <div class="alert-${message.type}" role="alert">
+              <span>${kcSanitize(message.summary)?no_esc}</span>
+            </div>
+          </#if>
+        </div>
 
         <#nested "form">
 
@@ -127,108 +119,6 @@
     </section>
   </main>
 
-  <script>
-    // Theme Management System
-    class ThemeManager {
-      constructor() {
-        this.themeSwitch = document.getElementById('theme-switch');
-        this.themeLabel = document.getElementById('theme-label');
-        this.themeIcon = document.getElementById('theme-icon');
-        this.currentTheme = this.getInitialTheme();
-        
-        this.init();
-      }
-      
-      getInitialTheme() {
-        // Prioridad: localStorage > preferencia del sistema > light
-        const savedTheme = localStorage.getItem('zmart-theme');
-        if (savedTheme) return savedTheme;
-        
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      }
-      
-      init() {
-        this.applyTheme(this.currentTheme);
-        this.themeSwitch.addEventListener('click', () => this.toggleTheme());
-        
-        // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-          if (!localStorage.getItem('zmart-theme')) {
-            this.currentTheme = e.matches ? 'dark' : 'light';
-            this.applyTheme(this.currentTheme);
-          }
-        });
-      }
-      
-      toggleTheme() {
-        this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
-        this.applyTheme(this.currentTheme);
-        localStorage.setItem('zmart-theme', this.currentTheme);
-      }
-      
-      applyTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        
-        if (theme === 'dark') {
-          this.themeSwitch.classList.add('active');
-          this.themeLabel.textContent = 'Dark';
-          this.themeIcon.textContent = '🌙';
-        } else {
-          this.themeSwitch.classList.remove('active');
-          this.themeLabel.textContent = 'Light';
-          this.themeIcon.textContent = '☀️';
-        }
-      }
-    }
-    
-    // Initialize theme manager when DOM is loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      new ThemeManager();
-    });
-    
-    // Enhanced form interactions
-    document.addEventListener('DOMContentLoaded', () => {
-      // Add focus effects to inputs
-      const inputs = document.querySelectorAll('.input, .kcInputClass, input[type="text"], input[type="password"], input[type="email"]');
-      inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-          const parent = this.parentElement;
-          if (parent) parent.classList.add('focused');
-        });
-        
-        input.addEventListener('blur', function() {
-          const parent = this.parentElement;
-          if (parent) parent.classList.remove('focused');
-        });
-      });
-      
-      // Add loading state to login button
-      const loginBtn = document.querySelector('.btn.login, .kcButtonPrimaryClass, #kc-login');
-      if (loginBtn) {
-        loginBtn.addEventListener('click', function(e) {
-          if (this.classList.contains('loading')) return;
-          
-          this.classList.add('loading');
-          const originalText = this.textContent || this.value;
-          if (this.tagName === 'INPUT') {
-            this.value = 'Signing in...';
-          } else {
-            this.textContent = 'Signing in...';
-          }
-          
-          // Simulate loading (remove in production)
-          setTimeout(() => {
-            this.classList.remove('loading');
-            if (this.tagName === 'INPUT') {
-              this.value = originalText;
-            } else {
-              this.textContent = originalText;
-            }
-          }, 2000);
-        });
-      }
-    });
-  </script>
 </body>
 </html>
 </#macro>
