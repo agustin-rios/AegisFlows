@@ -1,0 +1,404 @@
+/* ZMart E-commerce Theme - Account Management Styles */
+
+:root {
+  /* ZMart Brand Colors */
+  --zmart-primary: #2563eb;
+  --zmart-secondary: #10b981;
+  --zmart-accent: #f59e0b;
+  --zmart-danger: #ef4444;
+  --zmart-dark: #1f2937;
+  --zmart-light: #f8fafc;
+  --zmart-gray: #6b7280;
+  --zmart-gray-light: #f3f4f6;
+  
+  /* Gradients */
+  --zmart-gradient: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+  --zmart-card-gradient: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+/* Global Account Styles */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--zmart-light);
+  margin: 0;
+  padding: 0;
+  color: var(--zmart-dark);
+  line-height: 1.6;
+}
+
+/* Account Header */
+.account-header {
+  background: var(--zmart-gradient);
+  color: white;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+}
+
+.account-header .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.account-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.account-header .user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.account-header .avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+/* Navigation */
+.account-nav {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 2rem;
+}
+
+.account-nav .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.account-nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 2rem;
+}
+
+.account-nav li a {
+  display: block;
+  padding: 1rem 0;
+  color: var(--zmart-gray);
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.account-nav li a:hover,
+.account-nav li a.active {
+  color: var(--zmart-primary);
+  border-bottom-color: var(--zmart-primary);
+}
+
+/* Main Content Container */
+.account-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 2rem;
+}
+
+/* Sidebar */
+.account-sidebar {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  height: fit-content;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.account-sidebar h3 {
+  margin: 0 0 1rem 0;
+  color: var(--zmart-dark);
+  font-size: 1.1rem;
+}
+
+.account-sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.account-sidebar li {
+  margin-bottom: 0.5rem;
+}
+
+.account-sidebar li a {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: var(--zmart-gray);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.account-sidebar li a:hover,
+.account-sidebar li a.active {
+  background: var(--zmart-primary);
+  color: white;
+}
+
+/* Main Content */
+.account-main {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.account-main h2 {
+  margin: 0 0 1.5rem 0;
+  color: var(--zmart-dark);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: var(--zmart-dark);
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--zmart-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-primary {
+  background: var(--zmart-gradient);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary {
+  background: var(--zmart-gray-light);
+  color: var(--zmart-dark);
+  border: 2px solid #e5e7eb;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-danger {
+  background: var(--zmart-danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+/* Cards */
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.card h3 {
+  margin: 0 0 1rem 0;
+  color: var(--zmart-dark);
+  font-size: 1.2rem;
+}
+
+.card p {
+  color: var(--zmart-gray);
+  margin: 0 0 1rem 0;
+}
+
+/* Social Connections */
+.social-connections {
+  display: grid;
+  gap: 1rem;
+}
+
+.social-connection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.social-connection:hover {
+  border-color: var(--zmart-primary);
+}
+
+.social-connection .provider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.social-connection .provider-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.social-connection.connected {
+  border-color: var(--zmart-secondary);
+  background: #f0fdf4;
+}
+
+.social-connection.connected .status {
+  color: var(--zmart-secondary);
+  font-weight: 600;
+}
+
+/* Security Section */
+.security-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.security-item:last-child {
+  border-bottom: none;
+}
+
+.security-item h4 {
+  margin: 0;
+  color: var(--zmart-dark);
+}
+
+.security-item p {
+  margin: 0;
+  color: var(--zmart-gray);
+  font-size: 0.875rem;
+}
+
+/* Alerts */
+.alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.alert-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: var(--zmart-secondary);
+}
+
+.alert-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: var(--zmart-danger);
+}
+
+.alert-info {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: var(--zmart-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .account-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .account-nav ul {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .account-header .container {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}
+
+/* Loading States */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid var(--zmart-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

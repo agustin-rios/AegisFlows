@@ -1,0 +1,547 @@
+/* ZMart E-commerce Theme - Admin Console Styles */
+
+:root {
+  /* ZMart Brand Colors */
+  --zmart-primary: #2563eb;
+  --zmart-secondary: #10b981;
+  --zmart-accent: #f59e0b;
+  --zmart-danger: #ef4444;
+  --zmart-warning: #f59e0b;
+  --zmart-success: #10b981;
+  --zmart-info: #06b6d4;
+  
+  /* Neutral Colors */
+  --zmart-dark: #0f172a;
+  --zmart-gray-900: #111827;
+  --zmart-gray-800: #1f2937;
+  --zmart-gray-700: #374151;
+  --zmart-gray-600: #4b5563;
+  --zmart-gray-500: #6b7280;
+  --zmart-gray-400: #9ca3af;
+  --zmart-gray-300: #d1d5db;
+  --zmart-gray-200: #e5e7eb;
+  --zmart-gray-100: #f3f4f6;
+  --zmart-gray-50: #f9fafb;
+  --zmart-white: #ffffff;
+  
+  /* Gradients */
+  --zmart-gradient: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+  --zmart-dark-gradient: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  
+  /* Shadows */
+  --zmart-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --zmart-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --zmart-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --zmart-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Global Admin Styles */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--zmart-gray-50);
+  margin: 0;
+  padding: 0;
+  color: var(--zmart-gray-900);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* Admin Header */
+.admin-header {
+  background: var(--zmart-gradient);
+  color: var(--zmart-white);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: var(--zmart-shadow-lg);
+}
+
+.admin-header .container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-header .logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--zmart-white);
+  text-decoration: none;
+}
+
+.admin-header .user-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-header .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* Admin Layout */
+.admin-layout {
+  display: flex;
+  min-height: calc(100vh - 64px);
+}
+
+/* Sidebar */
+.admin-sidebar {
+  width: 280px;
+  background: var(--zmart-white);
+  border-right: 1px solid var(--zmart-gray-200);
+  overflow-y: auto;
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+}
+
+.admin-sidebar .nav-section {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--zmart-gray-200);
+}
+
+.admin-sidebar .nav-section:last-child {
+  border-bottom: none;
+}
+
+.admin-sidebar .section-title {
+  padding: 0 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--zmart-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.admin-sidebar .nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-sidebar .nav-item {
+  margin: 0;
+}
+
+.admin-sidebar .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: var(--zmart-gray-700);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.admin-sidebar .nav-link:hover {
+  background: var(--zmart-gray-50);
+  color: var(--zmart-primary);
+}
+
+.admin-sidebar .nav-link.active {
+  background: rgba(37, 99, 235, 0.05);
+  color: var(--zmart-primary);
+  border-left-color: var(--zmart-primary);
+  font-weight: 600;
+}
+
+.admin-sidebar .nav-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.75rem;
+  opacity: 0.7;
+}
+
+.admin-sidebar .nav-link.active .nav-icon {
+  opacity: 1;
+}
+
+/* Main Content */
+.admin-main {
+  flex: 1;
+  padding: 2rem;
+  background: var(--zmart-gray-50);
+  overflow-x: auto;
+}
+
+.admin-main .page-header {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-main .page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--zmart-gray-900);
+  margin: 0;
+}
+
+.admin-main .page-description {
+  color: var(--zmart-gray-600);
+  margin: 0.5rem 0 0 0;
+  font-size: 1rem;
+}
+
+.admin-main .page-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Cards */
+.admin-card {
+  background: var(--zmart-white);
+  border-radius: 12px;
+  box-shadow: var(--zmart-shadow);
+  border: 1px solid var(--zmart-gray-200);
+  margin-bottom: 1.5rem;
+}
+
+.admin-card .card-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--zmart-gray-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-card .card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--zmart-gray-900);
+  margin: 0;
+}
+
+.admin-card .card-body {
+  padding: 1.5rem;
+}
+
+.admin-card .card-footer {
+  padding: 1rem 1.5rem;
+  background: var(--zmart-gray-50);
+  border-top: 1px solid var(--zmart-gray-200);
+  border-radius: 0 0 12px 12px;
+}
+
+/* Forms */
+.admin-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.admin-form-group label {
+  display: block;
+  font-weight: 600;
+  color: var(--zmart-gray-900);
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.admin-form-group .help-text {
+  font-size: 0.75rem;
+  color: var(--zmart-gray-500);
+  margin-top: 0.25rem;
+}
+
+.admin-form-group input,
+.admin-form-group select,
+.admin-form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--zmart-gray-200);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: var(--zmart-white);
+}
+
+.admin-form-group input:focus,
+.admin-form-group select:focus,
+.admin-form-group textarea:focus {
+  outline: none;
+  border-color: var(--zmart-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.admin-form-group .error {
+  color: var(--zmart-danger);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* Buttons */
+.admin-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 40px;
+}
+
+.admin-btn-primary {
+  background: var(--zmart-gradient);
+  color: var(--zmart-white);
+}
+
+.admin-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--zmart-shadow-lg);
+}
+
+.admin-btn-secondary {
+  background: var(--zmart-white);
+  color: var(--zmart-gray-700);
+  border: 2px solid var(--zmart-gray-200);
+}
+
+.admin-btn-secondary:hover {
+  background: var(--zmart-gray-50);
+  border-color: var(--zmart-gray-300);
+}
+
+.admin-btn-danger {
+  background: var(--zmart-danger);
+  color: var(--zmart-white);
+}
+
+.admin-btn-danger:hover {
+  background: #dc2626;
+}
+
+.admin-btn-success {
+  background: var(--zmart-success);
+  color: var(--zmart-white);
+}
+
+.admin-btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  min-height: 32px;
+}
+
+.admin-btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  min-height: 48px;
+}
+
+/* Tables */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--zmart-white);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--zmart-shadow);
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--zmart-gray-200);
+}
+
+.admin-table th {
+  background: var(--zmart-gray-50);
+  font-weight: 600;
+  color: var(--zmart-gray-900);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-table td {
+  color: var(--zmart-gray-700);
+  font-size: 0.875rem;
+}
+
+.admin-table tr:hover {
+  background: var(--zmart-gray-50);
+}
+
+.admin-table .actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.status-badge.active {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--zmart-success);
+}
+
+.status-badge.inactive {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--zmart-gray-600);
+}
+
+.status-badge.pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--zmart-warning);
+}
+
+.status-badge.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--zmart-danger);
+}
+
+/* Alerts */
+.admin-alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  border: 1px solid;
+}
+
+.admin-alert-success {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.2);
+  color: var(--zmart-success);
+}
+
+.admin-alert-error {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: var(--zmart-danger);
+}
+
+.admin-alert-warning {
+  background: rgba(245, 158, 11, 0.05);
+  border-color: rgba(245, 158, 11, 0.2);
+  color: var(--zmart-warning);
+}
+
+.admin-alert-info {
+  background: rgba(37, 99, 235, 0.05);
+  border-color: rgba(37, 99, 235, 0.2);
+  color: var(--zmart-primary);
+}
+
+/* Stats Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--zmart-white);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--zmart-shadow);
+  border: 1px solid var(--zmart-gray-200);
+}
+
+.stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--zmart-gray-900);
+  margin: 0;
+}
+
+.stat-card .stat-label {
+  font-size: 0.875rem;
+  color: var(--zmart-gray-600);
+  margin: 0.5rem 0 0 0;
+}
+
+.stat-card .stat-change {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.stat-card .stat-change.positive {
+  color: var(--zmart-success);
+}
+
+.stat-card .stat-change.negative {
+  color: var(--zmart-danger);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+  
+  .admin-sidebar {
+    width: 100%;
+    position: static;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--zmart-gray-200);
+  }
+  
+  .admin-main {
+    padding: 1rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  .admin-main .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Loading States */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--zmart-gray-300);
+  border-top: 2px solid var(--zmart-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

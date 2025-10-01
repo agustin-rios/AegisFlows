@@ -1,0 +1,390 @@
+/* ZMart E-commerce Theme - Email Template Styles */
+
+/* Global Email Styles */
+table, td, p, a, li, blockquote {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+table, td {
+  mso-table-lspace: 0pt;
+  mso-table-rspace: 0pt;
+}
+
+img {
+  -ms-interpolation-mode: bicubic;
+  border: 0;
+  height: auto;
+  line-height: 100%;
+  outline: none;
+  text-decoration: none;
+}
+
+/* Email Container */
+.email-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Header */
+.email-header {
+  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.email-header .logo {
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 700;
+  text-decoration: none;
+  margin: 0;
+}
+
+.email-header .tagline {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  margin: 8px 0 0 0;
+  font-weight: 400;
+}
+
+/* Main Content */
+.email-body {
+  padding: 40px 30px;
+  background-color: #ffffff;
+}
+
+.email-body h1 {
+  color: #1f2937;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  line-height: 1.3;
+}
+
+.email-body h2 {
+  color: #1f2937;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 30px 0 15px 0;
+}
+
+.email-body p {
+  color: #4b5563;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+}
+
+.email-body .lead {
+  font-size: 18px;
+  color: #374151;
+  font-weight: 500;
+}
+
+/* Buttons */
+.btn-container {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+  color: #ffffff !important;
+  text-decoration: none;
+  padding: 16px 32px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+  min-width: 200px;
+  box-sizing: border-box;
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #059669 100%);
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151 !important;
+  border: 2px solid #e5e7eb;
+}
+
+/* Alert Boxes */
+.alert {
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  font-size: 15px;
+}
+
+.alert-info {
+  background-color: #eff6ff;
+  border-left: 4px solid #2563eb;
+  color: #1e40af;
+}
+
+.alert-success {
+  background-color: #f0fdf4;
+  border-left: 4px solid #10b981;
+  color: #047857;
+}
+
+.alert-warning {
+  background-color: #fffbeb;
+  border-left: 4px solid #f59e0b;
+  color: #d97706;
+}
+
+.alert-danger {
+  background-color: #fef2f2;
+  border-left: 4px solid #ef4444;
+  color: #dc2626;
+}
+
+/* Code Blocks */
+.code-block {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 16px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  color: #1f2937;
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+/* Lists */
+.email-body ul, .email-body ol {
+  margin: 0 0 20px 0;
+  padding-left: 30px;
+}
+
+.email-body li {
+  color: #4b5563;
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+/* Social Links */
+.social-buttons {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.social-button {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin: 0 8px;
+  border-radius: 50%;
+  text-decoration: none;
+  line-height: 40px;
+  text-align: center;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.social-button.facebook { background-color: #1877f2; }
+.social-button.twitter { background-color: #1da1f2; }
+.social-button.instagram { background-color: #e4405f; }
+.social-button.linkedin { background-color: #0077b5; }
+
+/* Footer */
+.email-footer {
+  background-color: #f8fafc;
+  padding: 30px 20px;
+  text-align: center;
+  border-top: 1px solid #e5e7eb;
+}
+
+.email-footer p {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0 0 10px 0;
+  line-height: 1.5;
+}
+
+.email-footer a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.email-footer a:hover {
+  text-decoration: underline;
+}
+
+.email-footer .company-info {
+  margin-bottom: 20px;
+}
+
+.email-footer .unsubscribe {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 20px;
+}
+
+/* Verification Code Box */
+.verification-code {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 2px solid #2563eb;
+  border-radius: 12px;
+  padding: 25px;
+  text-align: center;
+  margin: 30px 0;
+}
+
+.verification-code .code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: 8px;
+  margin: 10px 0;
+  display: block;
+}
+
+.verification-code .expires {
+  color: #6b7280;
+  font-size: 14px;
+  margin-top: 15px;
+}
+
+/* Account Details Table */
+.account-details {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.account-details th,
+.account-details td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.account-details th {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+}
+
+.account-details td {
+  color: #4b5563;
+  font-size: 15px;
+}
+
+.account-details tr:last-child td {
+  border-bottom: none;
+}
+
+/* Security Alert Box */
+.security-alert {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 2px solid #ef4444;
+  border-radius: 12px;
+  padding: 25px;
+  margin: 30px 0;
+}
+
+.security-alert .icon {
+  font-size: 48px;
+  color: #ef4444;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.security-alert h3 {
+  color: #dc2626;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  text-align: center;
+}
+
+.security-alert p {
+  color: #b91c1c;
+  text-align: center;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 600px) {
+  .email-container {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .email-body {
+    padding: 20px 15px !important;
+  }
+  
+  .email-header {
+    padding: 20px 15px !important;
+  }
+  
+  .btn {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .verification-code .code {
+    font-size: 24px !important;
+    letter-spacing: 4px !important;
+  }
+  
+  .account-details {
+    font-size: 14px !important;
+  }
+  
+  .account-details th,
+  .account-details td {
+    padding: 10px 12px !important;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .email-container {
+    background-color: #1f2937 !important;
+  }
+  
+  .email-body {
+    background-color: #1f2937 !important;
+  }
+  
+  .email-body h1,
+  .email-body h2 {
+    color: #f9fafb !important;
+  }
+  
+  .email-body p {
+    color: #d1d5db !important;
+  }
+  
+  .account-details {
+    background-color: #374151 !important;
+  }
+  
+  .account-details th {
+    background-color: #4b5563 !important;
+    color: #f3f4f6 !important;
+  }
+  
+  .account-details td {
+    color: #e5e7eb !important;
+    border-bottom-color: #4b5563 !important;
+  }
+}
