@@ -1,50 +1,97 @@
-/* ZMart E-commerce Theme - Admin Console Styles */
+/* ZMART · Admin Console con Light/Dark Mode - Adaptado de demo-login.html */
 
+/* ====== Variables de Color ====== */
 :root {
-  /* ZMart Brand Colors */
-  --zmart-primary: #2563eb;
-  --zmart-secondary: #10b981;
-  --zmart-accent: #f59e0b;
-  --zmart-danger: #ef4444;
-  --zmart-warning: #f59e0b;
-  --zmart-success: #10b981;
-  --zmart-info: #06b6d4;
+  /* Colores base ZMART */
+  --brick-700: #994B3C;
+  --brick-600: #A14C3D;
+  --brick-500: #D26450;
+  --blue-600: #1976D2;
   
-  /* Neutral Colors */
-  --zmart-dark: #0f172a;
-  --zmart-gray-900: #111827;
-  --zmart-gray-800: #1f2937;
-  --zmart-gray-700: #374151;
-  --zmart-gray-600: #4b5563;
-  --zmart-gray-500: #6b7280;
-  --zmart-gray-400: #9ca3af;
-  --zmart-gray-300: #d1d5db;
-  --zmart-gray-200: #e5e7eb;
-  --zmart-gray-100: #f3f4f6;
-  --zmart-gray-50: #f9fafb;
-  --zmart-white: #ffffff;
+  /* Variables de tema - Light Mode */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --border-color: #e5e7eb;
+  --border-focus: #d1d5db;
+  --input-bg: #ffffff;
+  --card-bg: rgba(255, 255, 255, 0.25);
+  --card-border: rgba(255, 255, 255, 0.3);
+  --divider-color: #e5e7eb;
+  --shadow: 0 18px 44px rgba(0, 0, 0, 0.16);
+  --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.25);
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.3);
   
-  /* Gradients */
-  --zmart-gradient: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
-  --zmart-dark-gradient: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  /* Espaciado y bordes */
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 16px;
   
-  /* Shadows */
-  --zmart-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --zmart-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --zmart-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --zmart-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  /* Colores de estado */
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --info-color: #06b6d4;
 }
 
-/* Global Admin Styles */
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--zmart-gray-50);
-  margin: 0;
-  padding: 0;
-  color: var(--zmart-gray-900);
-  line-height: 1.6;
-  font-size: 14px;
+/* Dark Mode Variables */
+[data-theme="dark"] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --border-color: #334155;
+  --border-focus: #475569;
+  --input-bg: #1e293b;
+  --card-bg: rgba(15, 23, 42, 0.4);
+  --card-border: rgba(148, 163, 184, 0.2);
+  --divider-color: #334155;
+  --shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.6);
+  --glass-bg: rgba(15, 23, 42, 0.4);
+  --glass-border: rgba(148, 163, 184, 0.2);
 }
+
+/* Auto mode - respeta la preferencia del sistema */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --border-color: #334155;
+    --border-focus: #475569;
+    --input-bg: #1e293b;
+    --card-bg: rgba(15, 23, 42, 0.4);
+    --card-border: rgba(148, 163, 184, 0.2);
+    --divider-color: #334155;
+    --shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+    --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.6);
+    --glass-bg: rgba(15, 23, 42, 0.4);
+    --glass-border: rgba(148, 163, 184, 0.2);
+  }
+}
+
+/* Global Styles */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Helvetica Neue", sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  line-height: 1.45;
+  font-size: 14px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
 
 /* Admin Header */
 .admin-header {

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ZMART · Iniciar sesión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* =============================================================
+       ZMART · Tema de Login con Light/Dark Mode
+       ============================================================= */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    /* ====== Variables de Color ====== */
+    :root {
+      /* Colores base ZMART */
+      --brick-700: #994B3C;
+      --brick-600: #A14C3D;
+      --brick-500: #D26450;
+      --blue-600: #1976D2;
+      
+      /* Variables de tema - Light Mode */
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --border-color: #e5e7eb;
+      --border-focus: #d1d5db;
+      --input-bg: #ffffff;
+      --card-bg: rgba(255, 255, 255, 0.25);
+      --card-border: rgba(255, 255, 255, 0.3);
+      --divider-color: #e5e7eb;
+      --shadow: 0 18px 44px rgba(0, 0, 0, 0.16);
+      --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.25);
+      --glass-bg: rgba(255, 255, 255, 0.25);
+      --glass-border: rgba(255, 255, 255, 0.3);
+      
+      /* Espaciado y bordes */
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 16px;
+    }
+
+    /* Dark Mode Variables */
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --border-color: #334155;
+      --border-focus: #475569;
+      --input-bg: #1e293b;
+      --card-bg: rgba(15, 23, 42, 0.4);
+      --card-border: rgba(148, 163, 184, 0.2);
+      --divider-color: #334155;
+      --shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+      --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.6);
+      --glass-bg: rgba(15, 23, 42, 0.4);
+      --glass-border: rgba(148, 163, 184, 0.2);
+    }
+
+    /* Auto mode - respeta la preferencia del sistema */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #64748b;
+        --border-color: #334155;
+        --border-focus: #475569;
+        --input-bg: #1e293b;
+        --card-bg: rgba(15, 23, 42, 0.4);
+        --card-border: rgba(148, 163, 184, 0.2);
+        --divider-color: #334155;
+        --shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+        --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.6);
+        --glass-bg: rgba(15, 23, 42, 0.4);
+        --glass-border: rgba(148, 163, 184, 0.2);
+      }
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Helvetica Neue", sans-serif;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      line-height: 1.45;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+
+    /* ====== Theme Toggle ====== */
+    .theme-toggle {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      padding: 8px 16px;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background: var(--glass-bg);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      background: var(--border-color);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .toggle-switch.active {
+      background: var(--brick-500);
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(24px);
+    }
+
+    .theme-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      min-width: 60px;
+    }
+
+    /* ====== Layout dividido ====== */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+    .pane { position: relative; display:flex; flex-direction:column; }
+    .pane--left {
+      padding: clamp(24px, 4vw, 48px) clamp(28px, 6vw, 80px);
+      background: var(--bg-primary);
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s ease;
+    }
+    .container {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .pane--right {
+      overflow: hidden;
+      background: #7a1f12; /* fallback si no hay imagen */
+      display: grid;
+      place-items: center;
+    }
+    .hero {
+      position:absolute; inset:0;
+      background-image: var(--hero-img, url('resources/img/background.png'));
+      background-size: cover;
+      background-position: center;
+      filter: saturate(1) contrast(1.05);
+    }
+    .hero-card {
+      position: relative;
+      z-index: 1;
+      padding: clamp(12px, 1.4vw, 18px) clamp(18px, 2.2vw, 26px);
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+    .hero-text {
+      color: #ffffff;
+      font-weight: 800;
+      letter-spacing: .8px;
+      font-size: clamp(34px, 6vw, 56px);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ====== Body izquierda ====== */
+    .container {
+      width: 100%; max-width: 540px; margin: 0;
+      display:flex; flex-direction:column; gap: 16px;
+    }
+    .title {
+      margin: 16px 0 4px;
+      font-size: clamp(26px, 3.2vw, 34px);
+      font-weight: 800;
+      color: var(--text-primary);
+      transition: color 0.3s ease;
+    }
+    .subtitle {
+      color: var(--text-secondary);
+      margin: 0 0 8px;
+      font-size: .98rem;
+      transition: color 0.3s ease;
+    }
+
+    /* ====== Formulario ====== */
+    .form { display:flex; flex-direction:column; gap: 16px; }
+    .row { display:flex; flex-direction:column; gap: 8px; }
+    .label-wrap{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      font-weight: 600; font-size: .94rem;
+      color: var(--text-primary);
+      transition: color 0.3s ease;
+    }
+    .input{
+      width: 100%;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: .85rem 1rem;
+      background: var(--input-bg);
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+    .input::placeholder{ 
+      color: var(--text-muted);
+      transition: color 0.3s ease;
+    }
+    .input:focus{ 
+      outline: none; 
+      border-color: var(--border-focus); 
+      box-shadow: 0 0 0 3px rgba(210,100,80,.18);
+    }
+
+    .forgot{ 
+      color: var(--blue-600); 
+      font-weight: 600; 
+      font-size: .9rem;
+      transition: color 0.3s ease;
+    }
+    .forgot:hover{
+      opacity: 0.8;
+    }
+    .remember{
+      display:flex; align-items:center; gap:10px; 
+      color: var(--text-primary); 
+      font-size:.9rem;
+      transition: color 0.3s ease;
+    }
+    .remember input{ 
+      width:18px; height:18px; 
+      accent-color: var(--brick-500);
+    }
+
+    .actions{ display:flex; flex-direction:column; gap: 12px; margin-top: 8px; }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:.65rem;
+      width:100%; padding:.9rem 1rem; border-radius: var(--radius-sm); border:1px solid transparent;
+      font-weight:700; cursor:pointer; 
+      transition: all 0.3s ease;
+      background: var(--input-bg);
+      color: var(--text-primary);
+    }
+    .btn:hover{ 
+      transform:translateY(-2px); 
+      box-shadow: var(--shadow-hover); 
+    }
+    .btn.login{ 
+      background: var(--brick-500); 
+      color: #ffffff;
+      border-color: var(--brick-500);
+    }
+    .btn.login:hover{ 
+      filter: brightness(0.96); 
+      box-shadow: var(--shadow-hover);
+    }
+
+    .btn.google{
+      background: var(--input-bg); 
+      border-color: var(--border-color); 
+      color: var(--text-primary); 
+      font-weight: 600;
+    }
+    .btn.google:hover{ 
+      background: var(--bg-secondary);
+      border-color: var(--border-focus);
+    }
+
+    .divider{
+      display:flex; align-items:center; gap:.75rem; 
+      color: var(--text-secondary); 
+      font-size:.9rem;
+      margin: .25rem 0;
+      transition: color 0.3s ease;
+    }
+    .divider::before,.divider::after{ 
+      content:""; flex:1; height:1px; 
+      background: var(--divider-color);
+      transition: background-color 0.3s ease;
+    }
+
+    .google-icon{
+      width:18px; height:18px; display:inline-block; background:
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="%23FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 31.7 29.2 35 24 35 16.8 35 11 29.2 11 22S16.8 9 24 9c3.6 0 6.8 1.3 9.3 3.5l5.7-5.7C34.6 3.1 29.6 1 24 1 10.7 1 0 11.7 0 25s10.7 24 24 24 24-10.7 24-24c0-1.6-.2-3.2-.4-4.5z"/><path fill="%23FF3D00" d="M0 25c0-7.3 3.9-13.6 9.7-17.2L15.7 13C13 14.6 11 17.5 11 22c0 6.2 5 11 11 11 2.8 0 5.4-1 7.4-2.6l6 6C31.7 39.7 28 41 24 41 10.7 41 0 32.3 0 25z"/><path fill="%234CAF50" d="M24 9c3.6 0 6.8 1.3 9.3 3.5l5.7-5.7C34.6 3.1 29.6 1 24 1 10.7 1 0 11.7 0 25l15.7-12C19 10.4 21.3 9 24 9z"/><path fill="%232196F3" d="M48 24c0-1.6-.2-3.2-.4-4.5H24v8h11.3c-1.6 3.7-5.1 6.5-9.3 6.5-3 0-5.6-1-7.6-2.7l-6 6C15.8 40.4 19.7 42 24 42c10.8 0 20-8.7 20-19.5z"/></svg>') no-repeat center/contain;
+    }
+
+    /* ====== Estados adicionales ====== */
+    .row.focused .label-wrap {
+      color: var(--brick-500);
+    }
+    
+    .btn.loading {
+      opacity: 0.8;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    
+    .btn.loading::after {
+      content: "";
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      display: inline-block;
+      animation: spin 1s linear infinite;
+      margin-left: 8px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ====== Responsive ====== */
+    @media (max-width: 980px){
+      .layout{ grid-template-columns: 1fr; }
+      .pane--right{ min-height: 46vh; order: 2; }
+      
+      .theme-toggle {
+        top: 16px;
+        right: 16px;
+        padding: 6px 12px;
+      }
+      
+      .theme-label {
+        font-size: 12px;
+        min-width: 50px;
+      }
+      
+      .toggle-switch {
+        width: 40px;
+        height: 22px;
+      }
+      
+      .toggle-slider {
+        width: 16px;
+        height: 16px;
+        top: 3px;
+        left: 3px;
+        font-size: 10px;
+      }
+      
+      .toggle-switch.active .toggle-slider {
+        transform: translateX(18px);
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .pane--left {
+        padding: clamp(20px, 5vw, 32px);
+      }
+      
+      .theme-toggle {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-bottom: 20px;
+        align-self: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Theme Toggle -->
+  <div class="theme-toggle">
+    <span class="theme-label" id="theme-label">Light</span>
+    <div class="toggle-switch" id="theme-switch">
+      <div class="toggle-slider">
+        <span id="theme-icon">☀️</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="layout">
+    <!-- Lado Izquierdo: formulario -->
+    <section class="pane pane--left">
+      <div class="container">
+        <h1 class="title">¡Bienvenido de vuelta!</h1>
+        <p class="subtitle">Ingresa tus credenciales para acceder a tu cuenta</p>
+
+        <form class="form" action="#" method="post" onsubmit="event.preventDefault(); alert('Demo de inicio de sesión (reemplazar con tu lógica).');">
+          <div class="row">
+            <div class="label-wrap">
+              <label for="email">Email address</label>
+            </div>
+            <input id="email" class="input" type="email" placeholder="Ingresa tu email" required />
+          </div>
+
+          <div class="row">
+            <div class="label-wrap">
+              <label for="password">Password</label>
+              <a class="forgot" href="#">forgot password</a>
+            </div>
+            <input id="password" class="input" type="password" placeholder="••••••••" required />
+          </div>
+
+          <div class="actions">
+            <label class="remember">
+              <input type="checkbox" id="remember" />
+              <span>Remember for 30 days</span>
+            </label>
+            <button class="btn login" type="submit">Login</button>
+          </div>
+
+          <div class="divider">Or</div>
+
+          <button class="btn google" type="button" onclick="alert('Demo: Sign in with Google');">
+            <span class="google-icon" aria-hidden="true"></span>
+            <span>Sign in with Google</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Lado Derecho: imagen + ZMART marca -->
+    <section class="pane pane--right" aria-label="ZMART Hero">
+      <div class="hero" aria-hidden="true"></div>
+      <div class="hero-card" role="img" aria-label="ZMART">
+        <div class="hero-text">ZMART</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Theme Management System
+    class ThemeManager {
+      constructor() {
+        this.themeSwitch = document.getElementById('theme-switch');
+        this.themeLabel = document.getElementById('theme-label');
+        this.themeIcon = document.getElementById('theme-icon');
+        this.currentTheme = this.getInitialTheme();
+        
+        this.init();
+      }
+      
+      getInitialTheme() {
+        // Prioridad: localStorage > preferencia del sistema > light
+        const savedTheme = localStorage.getItem('zmart-theme');
+        if (savedTheme) return savedTheme;
+        
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      
+      init() {
+        this.applyTheme(this.currentTheme);
+        this.themeSwitch.addEventListener('click', () => this.toggleTheme());
+        
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+          if (!localStorage.getItem('zmart-theme')) {
+            this.currentTheme = e.matches ? 'dark' : 'light';
+            this.applyTheme(this.currentTheme);
+          }
+        });
+      }
+      
+      toggleTheme() {
+        this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+        this.applyTheme(this.currentTheme);
+        localStorage.setItem('zmart-theme', this.currentTheme);
+      }
+      
+      applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        
+        if (theme === 'dark') {
+          this.themeSwitch.classList.add('active');
+          this.themeLabel.textContent = 'Dark';
+          this.themeIcon.textContent = '🌙';
+        } else {
+          this.themeSwitch.classList.remove('active');
+          this.themeLabel.textContent = 'Light';
+          this.themeIcon.textContent = '☀️';
+        }
+      }
+    }
+    
+    // Initialize theme manager when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      new ThemeManager();
+    });
+    
+    // Enhanced form interactions
+    document.addEventListener('DOMContentLoaded', () => {
+      // Add focus effects to inputs
+      const inputs = document.querySelectorAll('.input');
+      inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+          this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+          this.parentElement.classList.remove('focused');
+        });
+      });
+      
+      // Add loading state to login button
+      const loginBtn = document.querySelector('.btn.login');
+      if (loginBtn) {
+        loginBtn.addEventListener('click', function(e) {
+          if (this.classList.contains('loading')) return;
+          
+          this.classList.add('loading');
+          this.textContent = 'Signing in...';
+          
+          // Simulate loading (remove in production)
+          setTimeout(() => {
+            this.classList.remove('loading');
+            this.textContent = 'Login';
+          }, 2000);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

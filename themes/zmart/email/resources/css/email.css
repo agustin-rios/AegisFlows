@@ -30,7 +30,7 @@ img {
 
 /* Header */
 .email-header {
-  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+  background: linear-gradient(135deg, #c2410c 0%, #2563eb 100%);
   padding: 30px 20px;
   text-align: center;
 }
@@ -92,7 +92,7 @@ img {
 
 .btn {
   display: inline-block;
-  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+  background: linear-gradient(135deg, #c2410c 0%, #2563eb 100%);
   color: #ffffff !important;
   text-decoration: none;
   padding: 16px 32px;
@@ -105,7 +105,7 @@ img {
 }
 
 .btn:hover {
-  background: linear-gradient(135deg, #1d4ed8 0%, #059669 100%);
+  background: linear-gradient(135deg, #9a3412 0%, #1d4ed8 100%);
 }
 
 .btn-secondary {

@@ -1,283 +1,354 @@
-/* ZMart E-commerce Theme - Login Styles */
+/* ZMART · Tema de Login con Light/Dark Mode - Adaptado de demo-login.html */
 
+/* ====== Variables de Color ====== */
 :root {
-  /* ZMart Brand Colors */
-  --zmart-primary: #2563eb;      /* Modern blue */
-  --zmart-secondary: #10b981;    /* Success green */
-  --zmart-accent: #f59e0b;       /* Warning orange */
-  --zmart-danger: #ef4444;       /* Error red */
-  --zmart-dark: #1f2937;         /* Dark text */
-  --zmart-light: #f8fafc;        /* Light background */
-  --zmart-gray: #6b7280;         /* Muted text */
+  /* Colores base ZMART */
+  --brick-700: #994B3C;
+  --brick-600: #A14C3D;
+  --brick-500: #D26450;
+  --blue-600: #1976D2;
   
-  /* Gradients */
-  --zmart-gradient: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
-  --zmart-subtle-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  /* Variables de tema - Light Mode */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --border-color: #e5e7eb;
+  --border-focus: #d1d5db;
+  --input-bg: #ffffff;
+  --card-bg: rgba(255, 255, 255, 0.25);
+  --card-border: rgba(255, 255, 255, 0.3);
+  --divider-color: #e5e7eb;
+  --shadow: 0 18px 44px rgba(0, 0, 0, 0.16);
+  --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.25);
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.3);
   
-  /* Shadows */
-  --zmart-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --zmart-shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  /* Espaciado y bordes */
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 16px;
+}
+
+/* Dark Mode Variables */
+[data-theme="dark"] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --border-color: #334155;
+  --border-focus: #475569;
+  --input-bg: #1e293b;
+  --card-bg: rgba(15, 23, 42, 0.4);
+  --card-border: rgba(148, 163, 184, 0.2);
+  --divider-color: #334155;
+  --shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.6);
+  --glass-bg: rgba(15, 23, 42, 0.4);
+  --glass-border: rgba(148, 163, 184, 0.2);
+}
+
+/* Auto mode - respeta la preferencia del sistema */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --border-color: #334155;
+    --border-focus: #475569;
+    --input-bg: #1e293b;
+    --card-bg: rgba(15, 23, 42, 0.4);
+    --card-border: rgba(148, 163, 184, 0.2);
+    --divider-color: #334155;
+    --shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+    --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.6);
+    --glass-bg: rgba(15, 23, 42, 0.4);
+    --glass-border: rgba(148, 163, 184, 0.2);
+  }
 }
 
 /* Global Styles */
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--zmart-subtle-gradient);
   margin: 0;
-  padding: 0;
-  min-height: 100vh;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Helvetica Neue", sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  line-height: 1.45;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
+
+/* ====== Theme Toggle ====== */
+.theme-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 50px;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
 }
 
-/* Login Container */
-#kc-login {
-  background: white;
-  border-radius: 16px;
-  box-shadow: var(--zmart-shadow-lg);
-  padding: 2rem;
-  width: 100%;
-  max-width: 400px;
-  margin: 1rem;
-}
-
-/* ZMart Logo/Header */
-#kc-header-wrapper {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-#kc-header-wrapper h1 {
-  background: var(--zmart-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin: 0;
-  letter-spacing: -0.02em;
-}
-
-.kc-logo {
-  width: 120px;
-  height: auto;
-  margin-bottom: 1rem;
-}
-
-/* Form Styles */
-#kc-form {
-  width: 100%;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-label {
-  display: block;
-  font-weight: 600;
-  color: var(--zmart-dark);
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="email"] {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-  background: white;
-}
-
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="email"]:focus {
-  outline: none;
-  border-color: var(--zmart-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-input[type="text"]:invalid,
-input[type="password"]:invalid,
-input[type="email"]:invalid {
-  border-color: var(--zmart-danger);
-}
-
-/* Primary Button */
-#kc-login-submit {
-  width: 100%;
-  padding: 0.75rem 1.5rem;
-  background: var(--zmart-gradient);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 1rem;
-}
-
-#kc-login-submit:hover {
+.theme-toggle:hover {
+  background: var(--glass-bg);
   transform: translateY(-2px);
-  box-shadow: var(--zmart-shadow);
+  box-shadow: var(--shadow);
 }
 
-#kc-login-submit:active {
-  transform: translateY(0);
-}
-
-/* Social Login Buttons */
-.kc-social-provider {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  margin-bottom: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  background: white;
+.toggle-switch {
+  position: relative;
+  width: 50px;
+  height: 26px;
+  background: var(--border-color);
+  border-radius: 50px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  text-decoration: none;
-  color: var(--zmart-dark);
-  font-weight: 500;
+  transition: background-color 0.3s ease;
 }
 
-.kc-social-provider:hover {
-  border-color: var(--zmart-primary);
-  transform: translateY(-1px);
-  box-shadow: var(--zmart-shadow);
+.toggle-switch.active {
+  background: var(--brick-500);
 }
 
-.kc-social-provider.github {
-  background: #24292e;
-  color: white;
-  border-color: #24292e;
-}
-
-.kc-social-provider.google {
-  background: #4285f4;
-  color: white;
-  border-color: #4285f4;
-}
-
-/* Social Icons */
-.social-icon {
+.toggle-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
   width: 20px;
   height: 20px;
-}
-
-/* Remember Me */
-.checkbox-wrapper {
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 1rem 0;
+  justify-content: center;
+  font-size: 12px;
 }
 
-input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--zmart-primary);
+.toggle-switch.active .toggle-slider {
+  transform: translateX(24px);
 }
 
-/* Links */
-.kc-form-links {
-  text-align: center;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+.theme-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 60px;
 }
 
-.kc-form-links a {
-  color: var(--zmart-primary);
+/* ====== Layout dividido ====== */
+.layout, #kc-login {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+.pane { position: relative; display:flex; flex-direction:column; }
+.pane--left, #kc-form-card {
+  padding: clamp(24px, 4vw, 48px) clamp(28px, 6vw, 80px);
+  background: var(--bg-primary);
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+.container {
+  margin-left: auto;
+  margin-right: auto;
+}
+.pane--right, #kc-info {
+  overflow: hidden;
+  background: #7a1f12; /* fallback si no hay imagen */
+  display: grid;
+  place-items: center;
+}
+.hero {
+  position:absolute; inset:0;
+  background-image: var(--hero-img, url('../img/background.png'));
+  background-size: cover;
+  background-position: center;
+  filter: saturate(1) contrast(1.05);
+}
+.hero-card {
+  position: relative;
+  z-index: 1;
+  padding: clamp(12px, 1.4vw, 18px) clamp(18px, 2.2vw, 26px);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+.hero-text {
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: .8px;
+  font-size: clamp(34px, 6vw, 56px);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ====== Body izquierda ====== */
+.container, #kc-content-wrapper {
+  width: 100%; max-width: 540px; margin: 0;
+  display:flex; flex-direction:column; gap: 16px;
+}
+.title, #kc-page-title {
+  margin: 16px 0 4px;
+  font-size: clamp(26px, 3.2vw, 34px);
+  font-weight: 800;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+.subtitle {
+  color: var(--text-secondary);
+  margin: 0 0 8px;
+  font-size: .98rem;
+  transition: color 0.3s ease;
+}
+
+/* ====== Formulario ====== */
+.form, #kc-form { display:flex; flex-direction:column; gap: 16px; }
+.row, .kcFormGroupClass { display:flex; flex-direction:column; gap: 8px; }
+.label-wrap, .kcLabelClass{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  font-weight: 600; font-size: .94rem;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+.input, .kcInputClass, input[type="text"], input[type="password"], input[type="email"]{
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: .85rem 1rem;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+.input::placeholder, .kcInputClass::placeholder, input::placeholder{ 
+  color: var(--text-muted);
+  transition: color 0.3s ease;
+}
+.input:focus, .kcInputClass:focus, input:focus{ 
+  outline: none; 
+  border-color: var(--border-focus); 
+  box-shadow: 0 0 0 3px rgba(210,100,80,.18);
+}
+
+.forgot, .kcFormOptionsWrapperClass a{ 
+  color: var(--blue-600); 
+  font-weight: 600; 
+  font-size: .9rem;
+  transition: color 0.3s ease;
+}
+.forgot:hover, .kcFormOptionsWrapperClass a:hover{
+  opacity: 0.8;
+}
+.remember, .checkbox{
+  display:flex; align-items:center; gap:10px; 
+  color: var(--text-primary); 
+  font-size:.9rem;
+  transition: color 0.3s ease;
+}
+.remember input, .checkbox input{ 
+  width:18px; height:18px; 
+  accent-color: var(--brick-500);
+}
+
+.actions, .kcFormButtonsClass{ display:flex; flex-direction:column; gap: 12px; margin-top: 8px; }
+
+.btn, .kcButtonClass{
+  display:inline-flex; align-items:center; justify-content:center; gap:.65rem;
+  width:100%; padding:.9rem 1rem; border-radius: var(--radius-sm); border:1px solid transparent;
+  font-weight:700; cursor:pointer; 
+  transition: all 0.3s ease;
+  background: var(--input-bg);
+  color: var(--text-primary);
+}
+.btn:hover, .kcButtonClass:hover{ 
+  transform:translateY(-2px); 
+  box-shadow: var(--shadow-hover); 
+}
+.btn.login, .kcButtonPrimaryClass, #kc-login{ 
+  background: var(--brick-500); 
+  color: #ffffff;
+  border-color: var(--brick-500);
+}
+.btn.login:hover, .kcButtonPrimaryClass:hover, #kc-login:hover{ 
+  filter: brightness(0.96); 
+  box-shadow: var(--shadow-hover);
+}
+
+.btn.google, .kcFormSocialAccountLinkClass{
+  background: var(--input-bg); 
+  border-color: var(--border-color); 
+  color: var(--text-primary); 
+  font-weight: 600;
+  display:inline-flex; align-items:center; justify-content:center; gap:.65rem;
+  width:100%; padding:.9rem 1rem; border-radius: var(--radius-sm); border:1px solid transparent;
+  cursor:pointer; 
+  transition: all 0.3s ease;
   text-decoration: none;
-  font-weight: 500;
-  font-size: 0.875rem;
-  transition: color 0.2s ease;
+}
+.btn.google:hover, .kcFormSocialAccountLinkClass:hover{ 
+  background: var(--bg-secondary);
+  border-color: var(--border-focus);
+  transform:translateY(-2px); 
+  box-shadow: var(--shadow-hover);
 }
 
-.kc-form-links a:hover {
-  color: var(--zmart-secondary);
+.divider, #kc-social-providers hr{
+  display:flex; align-items:center; gap:.75rem; 
+  color: var(--text-secondary); 
+  font-size:.9rem;
+  margin: .25rem 0;
+  transition: color 0.3s ease;
+}
+.divider::before,.divider::after{ 
+  content:""; flex:1; height:1px; 
+  background: var(--divider-color);
+  transition: background-color 0.3s ease;
 }
 
-/* Error Messages */
-.alert-error {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: var(--zmart-danger);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  font-size: 0.875rem;
+.google-icon{
+  width:18px; height:18px; display:inline-block; background:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="%23FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 31.7 29.2 35 24 35 16.8 35 11 29.2 11 22S16.8 9 24 9c3.6 0 6.8 1.3 9.3 3.5l5.7-5.7C34.6 3.1 29.6 1 24 1 10.7 1 0 11.7 0 25s10.7 24 24 24 24-10.7 24-24c0-1.6-.2-3.2-.4-4.5z"/><path fill="%23FF3D00" d="M0 25c0-7.3 3.9-13.6 9.7-17.2L15.7 13C13 14.6 11 17.5 11 22c0 6.2 5 11 11 11 2.8 0 5.4-1 7.4-2.6l6 6C31.7 39.7 28 41 24 41 10.7 41 0 32.3 0 25z"/><path fill="%234CAF50" d="M24 9c3.6 0 6.8 1.3 9.3 3.5l5.7-5.7C34.6 3.1 29.6 1 24 1 10.7 1 0 11.7 0 25l15.7-12C19 10.4 21.3 9 24 9z"/><path fill="%232196F3" d="M48 24c0-1.6-.2-3.2-.4-4.5H24v8h11.3c-1.6 3.7-5.1 6.5-9.3 6.5-3 0-5.6-1-7.6-2.7l-6 6C15.8 40.4 19.7 42 24 42c10.8 0 20-8.7 20-19.5z"/></svg>') no-repeat center/contain;
 }
 
-/* Success Messages */
-.alert-success {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: var(--zmart-secondary);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  font-size: 0.875rem;
+/* ====== Estados adicionales ====== */
+.row.focused .label-wrap, .kcFormGroupClass.focused .kcLabelClass {
+  color: var(--brick-500);
 }
 
-/* Info Messages */
-.alert-info {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  color: var(--zmart-primary);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  font-size: 0.875rem;
-}
-
-/* Responsive Design */
-@media (max-width: 480px) {
-  body {
-    padding: 1rem;
-  }
-  
-  #kc-login {
-    padding: 1.5rem;
-    margin: 0;
-  }
-  
-  #kc-header-wrapper h1 {
-    font-size: 2rem;
-  }
-}
-
-/* Loading State */
-.loading {
-  opacity: 0.7;
+.btn.loading, .kcButtonClass.loading {
+  opacity: 0.8;
+  cursor: not-allowed;
   pointer-events: none;
 }
 
-.loading #kc-login-submit::after {
+.btn.loading::after, .kcButtonClass.loading::after {
   content: "";
   width: 16px;
   height: 16px;
-  border: 2px solid #ffffff;
-  border-top: 2px solid transparent;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
   border-radius: 50%;
   display: inline-block;
   animation: spin 1s linear infinite;
-  margin-left: 0.5rem;
+  margin-left: 8px;
 }
 
 @keyframes spin {
@@ -285,17 +356,128 @@ input[type="checkbox"] {
   100% { transform: rotate(360deg); }
 }
 
-/* ZMart Branding Footer */
-.zmart-footer {
-  text-align: center;
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
-  color: var(--zmart-gray);
-  font-size: 0.75rem;
+/* ====== Mensajes de estado ====== */
+.alert-error, .kcInputErrorMessageClass {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #ef4444;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
 }
 
-.zmart-footer a {
-  color: var(--zmart-primary);
-  text-decoration: none;
+.alert-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #10b981;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.alert-info {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: var(--blue-600);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 980px){
+  .layout, #kc-login{ grid-template-columns: 1fr; }
+  .pane--right, #kc-info{ min-height: 46vh; order: 2; }
+  
+  .theme-toggle {
+    top: 16px;
+    right: 16px;
+    padding: 6px 12px;
+  }
+  
+  .theme-label {
+    font-size: 12px;
+    min-width: 50px;
+  }
+  
+  .toggle-switch {
+    width: 40px;
+    height: 22px;
+  }
+  
+  .toggle-slider {
+    width: 16px;
+    height: 16px;
+    top: 3px;
+    left: 3px;
+    font-size: 10px;
+  }
+  
+  .toggle-switch.active .toggle-slider {
+    transform: translateX(18px);
+  }
+}
+
+@media (max-width: 640px) {
+  .pane--left, #kc-form-card {
+    padding: clamp(20px, 5vw, 32px);
+  }
+  
+  .theme-toggle {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-bottom: 20px;
+    align-self: flex-end;
+  }
+}
+
+/* ====== Estilos específicos de Keycloak ====== */
+#kc-form-card {
+  background: var(--bg-primary);
+  transition: background-color 0.3s ease;
+}
+
+#kc-social-providers {
+  margin-top: 1rem;
+}
+
+#kc-social-providers h4 {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 1rem 0;
+  transition: color 0.3s ease;
+}
+
+.kcFormSocialAccountListClass {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#kc-registration-container {
+  text-align: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--divider-color);
+}
+
+#kc-registration a {
+  color: var(--blue-600);
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+#kc-registration a:hover {
+  opacity: 0.8;
 }

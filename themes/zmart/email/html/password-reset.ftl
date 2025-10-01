@@ -4,11 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZMart - Password Reset Request</title>
-    <style>
-        /* Import ZMart email styles */
-        <#include "*/css/email.css">
-    </style>
+    <title>${msg("passwordResetSubject")}</title>
+    <link rel="stylesheet" href="${url.resourcesPath}/css/email.css">
 </head>
 <body>
     <div class="email-container">
@@ -20,14 +17,14 @@
 
         <!-- Main Content -->
         <div class="email-body">
-            <h1>Password Reset Request</h1>
+            <h1>${msg("passwordResetBodyHeader")}</h1>
             
-            <p class="lead">Hello ${user.firstName!"valued customer"},</p>
+            <p class="lead">${msg("passwordResetBodyGreeting", user.firstName!"")}</p>
             
-            <p>We received a request to reset the password for your ZMart account. If you made this request, click the button below to create a new password:</p>
+            <p>${msg("passwordResetBody")}</p>
 
             <div class="btn-container">
-                <a href="${link}" class="btn">Reset My Password</a>
+                <a href="${link}" class="btn">${msg("passwordResetButton")}</a>
             </div>
 
             <div class="alert alert-warning">

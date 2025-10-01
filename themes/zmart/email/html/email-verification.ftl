@@ -4,11 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to ZMart - Email Verification Required</title>
-    <style>
-        /* Import ZMart email styles */
-        <#include "*/css/email.css">
-    </style>
+    <title>${msg("emailVerificationSubject")}</title>
+    <link rel="stylesheet" href="${url.resourcesPath}/css/email.css">
 </head>
 <body>
     <div class="email-container">
@@ -20,14 +17,12 @@
 
         <!-- Main Content -->
         <div class="email-body">
-            <h1>Welcome to ZMart, ${user.firstName!""}!</h1>
+            <h1>${msg("emailVerificationBodyHeader", user.firstName!"")}</h1>
             
-            <p class="lead">Thank you for joining our community of savvy shoppers. We're excited to have you on board!</p>
-            
-            <p>To complete your registration and start exploring thousands of products, please verify your email address by clicking the button below:</p>
+            <p class="lead">${msg("emailVerificationBody")}</p>
 
             <div class="btn-container">
-                <a href="${link}" class="btn">Verify Email Address</a>
+                <a href="${link}" class="btn">${msg("emailVerificationButton")}</a>
             </div>
 
             <div class="alert alert-info">
